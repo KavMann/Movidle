@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Movidle</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/main.css') }}"
+    />
+    <!-- Keyboard styles -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/keyboard.css') }}"
+    />
+
+    <!-- Google Material Icons -->
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header>
+      <h1>Movidle</h1>
+      <div class="menu">
+        <button>Help</button>
+        <button>Settings</button>
+      </div>
+    </header>
+
+    <div class="hint">
+      <!--p>Hint: {{ hint }}</p-->
+    </div>
+
+    <div class="input-section" id="input-container">
+      <!-- Dynamic inputs will be generated here -->
+    </div>
+    <div class="keyboard">
+      <div class="row" id="row1"></div>
+      <div class="row" id="row2"></div>
+      <div class="row" id="row3"></div>
+    </div>
+    <!--button onclick="checkGuess()">Check Guess</button-->
+
+    <footer>&copy; 2024 Movidle. All rights reserved.</footer>
+
+    <script>
+      const targetWord = "{{ word|e }}"; // Escapes quotes and HTML
+      console.log("Target word:", targetWord); // Debugging line
+    </script>
+    <script src="{{ url_for('static', filename='js/keyboard.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/input.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/check.js') }}"></script>
+  </body>
+</html>
