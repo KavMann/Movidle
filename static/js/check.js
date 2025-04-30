@@ -1,104 +1,84 @@
-// Global variable to track the color states of the keys
 const keyState = {};
 
 function updateStreak(won) {
-  const today = new Date();
-  const todayStr = today.toDateString();
-  const lastCompletedStr = localStorage.getItem("lastCompletedDate");
-  const lastCompleted = lastCompletedStr ? new Date(lastCompletedStr) : null;
+  const todayStr = new Date().toDateString();
+  const lastStr = localStorage.getItem("lastCompletedDate");
+  let streak = parseInt(localStorage.getItem("streak")) || 0;
 
-  let currentStreak = parseInt(localStorage.getItem("streak")) || 0;
+  if (lastStr === todayStr) return streak;
 
-  if (lastCompletedStr === todayStr) return currentStreak;
+  const lastDate = lastStr ? new Date(lastStr) : null;
+  const diffDays = lastDate
+    ? (new Date() - lastDate) / (1000 * 60 * 60 * 24)
+    : Infinity;
 
-  let streakContinues = false;
-  if (lastCompleted) {
-    const diffTime = today - lastCompleted;
-    const diffDays = diffTime / (1000 * 60 * 60 * 24);
-    streakContinues =
-      diffDays < 2 && today.getDate() - lastCompleted.getDate() === 1;
-  }
+  const continues =
+    lastDate && diffDays < 2 && new Date().getDate() - lastDate.getDate() === 1;
 
-  currentStreak = won ? (streakContinues ? currentStreak + 1 : 1) : 0;
-  localStorage.setItem("streak", currentStreak);
+  streak = won ? (continues ? streak + 1 : 1) : 0;
+
+  localStorage.setItem("streak", streak);
   localStorage.setItem("lastCompletedDate", todayStr);
 
-  return currentStreak;
+  return streak;
 }
 
 function checkGuess() {
-  const rawWord = targetWord.toLowerCase();
-  const word = rawWord.replace(/[^a-z]/g, "");
-  let guess = "";
-  const colorMap = {
-    green: "green",
-    yellow: "rgb(129, 129, 22)",
-    grey: "rgb(46, 46, 46)",
-  };
+  const word = targetWord.toLowerCase().replace(/[^a-z]/g, "");
+  const inputs = document.querySelectorAll(
+    "#input-container .guess-row:last-child input"
+  );
+  const guess = [...inputs].map((i) => i.value.toLowerCase()).join("");
 
-  const inputContainer = document.getElementById("input-container");
-  const mostRecentRow = inputContainer.lastElementChild;
-  const inputs = mostRecentRow.querySelectorAll("input");
+  const result = Array(word.length).fill("grey");
+  const count = {};
+
+  for (const char of word) count[char] = (count[char] || 0) + 1;
 
   for (let i = 0; i < word.length; i++) {
-    guess += inputs[i].value.toLowerCase();
-  }
-
-  const guessArray = guess.split("");
-  const wordArray = word.split("");
-  const resultColors = Array(word.length).fill("grey");
-  const letterCount = {};
-
-  // Count each letter in the word
-  for (let char of wordArray) {
-    letterCount[char] = (letterCount[char] || 0) + 1;
-  }
-
-  // Mark green (correct letter, correct position)
-  for (let i = 0; i < word.length; i++) {
-    if (guessArray[i] === wordArray[i]) {
-      resultColors[i] = "green";
-      letterCount[guessArray[i]] -= 1;
+    if (guess[i] === word[i]) {
+      result[i] = "green";
+      count[guess[i]]--;
     }
   }
 
-  // Mark yellow (correct letter, wrong position)
   for (let i = 0; i < word.length; i++) {
-    if (resultColors[i] !== "green" && letterCount[guessArray[i]] > 0) {
-      resultColors[i] = "yellow";
-      letterCount[guessArray[i]] -= 1;
+    if (result[i] === "grey" && count[guess[i]] > 0) {
+      result[i] = "yellow";
+      count[guess[i]]--;
     }
   }
 
-  // Apply colors and update keyState
-  for (let i = 0; i < word.length; i++) {
-    const input = inputs[i];
-    const letter = guessArray[i];
-    const color = resultColors[i];
-
+  inputs.forEach((input, i) => {
+    const letter = input.value.toLowerCase();
+    const color = result[i];
     setTimeout(() => {
-      input.style.backgroundColor = colorMap[color];
-      input.classList.add("flip");
+      input.classList.add("flip", color);
+
+      // Remove any old color class
+      input.classList.remove("green", "yellow", "grey");
+      input.classList.add(color);
+
       keyState[letter] = color !== "grey" ? color : keyState[letter] || "grey";
       updateKeyboardColors();
-    }, i * 300); // delay each flip
-  }
+    }, i * 300);
+  });
 
   if (guess === word) {
-    const streak = updateStreak(true);
-    setTimeout(() => {
-      showPlayAgainModal(streak);
-    }, guess.length * 300 + 600);
+    setTimeout(
+      () => showPlayAgainModal(updateStreak(true)),
+      word.length * 300 + 600
+    );
     return;
   }
 
-  if (document.querySelectorAll(".guess-row").length > 5 && guess !== word) {
-    const streak = updateStreak(false);
+  if (document.querySelectorAll(".guess-row").length > 5) {
     showEndMessage(`No more guesses! The movie was:\n${targetWord}`);
-    revealAnswer(rawWord);
-    setTimeout(() => {
-      showNextTimeModal(streak);
-    }, guess.length * 300 + 600);
+    revealAnswer(targetWord.toLowerCase());
+    setTimeout(
+      () => showNextTimeModal(updateStreak(false)),
+      word.length * 300 + 600
+    );
     return;
   }
 
@@ -106,105 +86,83 @@ function checkGuess() {
 }
 
 function revealAnswer(answer) {
-  const inputContainer = document.getElementById("input-container");
-  const answerRow = document.createElement("div");
-  answerRow.classList.add("guess-row");
+  const row = document.createElement("div");
+  row.className = "guess-row";
 
-  for (let i = 0; i < answer.length; i++) {
-    const char = answer[i];
-
-    if (char.match(/[A-Za-z]/)) {
-      const input = document.createElement("input");
-      input.type = "text";
-      input.classList.add("letter-input");
-      input.value = char.toUpperCase();
-      input.disabled = true;
-      input.style.backgroundColor = "green";
-      answerRow.appendChild(input);
-    } else {
-      const span = document.createElement("span");
-      span.classList.add("pre-filled");
-      span.textContent = char;
-      answerRow.appendChild(span);
-    }
+  for (const char of answer) {
+    const el = /[A-Za-z]/.test(char)
+      ? Object.assign(document.createElement("input"), {
+          type: "text",
+          className: "letter-input green",
+          value: char.toUpperCase(),
+          disabled: true,
+        })
+      : Object.assign(document.createElement("span"), {
+          className: "pre-filled",
+          textContent: char,
+        });
+    row.appendChild(el);
   }
 
-  inputContainer.appendChild(answerRow);
+  document.getElementById("input-container").appendChild(row);
 }
 
 function updateKeyboardColors() {
-  const keyboard = document.getElementsByClassName("key");
-  for (let i = 0; i < keyboard.length; i++) {
-    const key = keyboard[i];
-    const keyLetter = key.innerText.toLowerCase();
-    const state = keyState[keyLetter];
-
+  [...document.getElementsByClassName("key")].forEach((key) => {
+    const letter = key.innerText.toLowerCase();
+    const state = keyState[letter];
     if (state) {
-      key.style.backgroundColor =
-        state === "green"
-          ? "green"
-          : state === "yellow"
-          ? "rgb(212, 212, 0)"
-          : "rgb(46, 46, 46)";
+      key.classList.remove("green", "yellow", "grey");
+      key.classList.add(state);
     }
-  }
+  });
 }
 
 function createNewRow() {
-  const allRows = document.querySelectorAll(".guess-row");
-  allRows.forEach((row) => {
-    // Add the past-guess class after the flip animation has finished
+  document.querySelectorAll(".guess-row").forEach((row) =>
     setTimeout(() => {
       row.classList.remove("flip-in");
       row.classList.add("past-guess");
-    }, targetWord.length * 300 + 300); // Adjust the timeout to match the flip animation duration
-  });
+    }, targetWord.length * 300 + 300)
+  );
 
-  setTimeout(() => {
-    generateInputs(targetWord);
-  }, targetWord.length * 300 + 600); // Delay to ensure past-guess effect is applied first
+  setTimeout(() => generateInputs(targetWord), targetWord.length * 300 + 600);
 }
 
-function showEndMessage(message) {
-  const msgBox = document.createElement("div");
-  msgBox.innerText = message;
-  msgBox.className = "message-box";
-  document.body.appendChild(msgBox);
-
-  setTimeout(() => {
-    msgBox.remove();
-  }, 3000);
+function showEndMessage(msg) {
+  const box = document.createElement("div");
+  box.className = "message-box";
+  box.innerText = msg;
+  document.body.appendChild(box);
+  setTimeout(() => box.remove(), 3000);
 }
 
 function showPlayAgainModal(streak) {
-  const modal = document.createElement("div");
-  modal.className = "play-again-modal";
-  modal.innerHTML = ```
-    <div class="modal-content">
-      <h2>🎉 Congratulations!</h2>
-      <p>Come back tomorrow for a new movie!</p>
-      <p><strong>Current Streak:</strong> ${streak} 🔥</p>
-      <button onclick="closeModal()">OK</button>
-    </div>
-  ```;
-  document.body.appendChild(modal);
+  showModal(
+    "🎉 Congratulations!",
+    `Come back tomorrow for a new movie!<br><strong>Current Streak:</strong> ${streak} 🔥`
+  );
 }
 
 function showNextTimeModal(streak) {
+  showModal(
+    "💔 Unlucky! Next Time",
+    `Come back tomorrow for a new movie!<br><strong>Current Streak:</strong> ${streak} 🔥`
+  );
+}
+
+function showModal(title, content) {
   const modal = document.createElement("div");
   modal.className = "play-again-modal";
-  modal.innerHTML = ```
+  modal.innerHTML = `
     <div class="modal-content">
-      <h2>💔 Unlucky! Next Time</h2>
-      <p>Come back tomorrow for a new movie!</p>
-      <p><strong>Current Streak:</strong> ${streak} 🔥</p>
+      <h2>${title}</h2>
+      <p>${content}</p>
       <button onclick="closeModal()">OK</button>
-    </div>
-  ```;
+    </div>`;
   document.body.appendChild(modal);
 }
 
 function closeModal() {
-  const modal = document.querySelector(".play-again-modal, .next-time-modal");
-  if (modal) modal.remove();
+  document.querySelector(".play-again-modal")?.remove();
 }

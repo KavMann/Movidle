@@ -6,61 +6,54 @@ const layout = [
 
 let lastFocusedInput = null;
 
+const createKeyButton = (key) => {
+  const btn = document.createElement("div");
+  btn.className = "key" + (["ENTER", "⌫"].includes(key) ? " special" : "");
+  btn.textContent = key;
+  btn.addEventListener("click", () => handleKeyClick(key));
+  return btn;
+};
+
 layout.forEach((row, rowIndex) => {
-  const rowDiv = document.getElementById("row" + (rowIndex + 1));
-  row.forEach((key) => {
-    const keyButton = document.createElement("div");
-    keyButton.classList.add("key");
-
-    if (key === "ENTER" || key === "⌫") {
-      keyButton.classList.add("special");
-    }
-
-    keyButton.innerText = key;
-
-    keyButton.addEventListener("click", () => {
-      handleKeyClick(key);
-    });
-
-    rowDiv.appendChild(keyButton);
-  });
+  const rowDiv = document.getElementById(`row${rowIndex + 1}`);
+  row.forEach((key) => rowDiv.appendChild(createKeyButton(key)));
 });
 
-// Use this in input.js when creating input elements:
-document.addEventListener("focusin", (event) => {
-  if (event.target.tagName === "INPUT") {
-    lastFocusedInput = event.target;
-  }
+document.addEventListener("focusin", (e) => {
+  if (e.target.tagName === "INPUT") lastFocusedInput = e.target;
 });
 
 function handleKeyClick(key) {
   if (!lastFocusedInput || lastFocusedInput.tagName !== "INPUT") return;
 
-  const activeInput = lastFocusedInput;
+  const row = lastFocusedInput.closest(".guess-row");
+  const inputs = Array.from(row.querySelectorAll("input"));
+  const currentIndex = inputs.indexOf(lastFocusedInput);
 
   if (key === "⌫") {
-    // Handle backspace
-    let prev = activeInput.previousElementSibling;
-    while (prev && prev.tagName !== "INPUT") {
-      prev = prev.previousElementSibling; // Skip over spans
-    }
-
+    lastFocusedInput.value = "";
+    const prev = findPreviousInput(lastFocusedInput);
     if (prev) {
-      prev.focus(); // Focus on the previous input
+      prev.focus();
       prev.value = "";
-    } else {
-      activeInput.focus(); // If no previous input, stay on the current input
     }
   } else if (key === "ENTER") {
-    checkGuess();
+    const allFilled = inputs.every((input) => input.value.trim() !== "");
+    allFilled
+      ? checkGuess()
+      : alert("Please fill in all letters before submitting.");
   } else {
-    activeInput.value = key;
-    const inputs = Array.from(
-      activeInput.closest(".guess-row").querySelectorAll("input")
-    );
-    const currentIndex = inputs.indexOf(activeInput);
+    lastFocusedInput.value = key;
     if (currentIndex < inputs.length - 1) {
       inputs[currentIndex + 1].focus();
     }
   }
+}
+
+function findPreviousInput(el) {
+  let prev = el.previousElementSibling;
+  while (prev && prev.tagName !== "INPUT") {
+    prev = prev.previousElementSibling;
+  }
+  return prev;
 }

@@ -1,100 +1,105 @@
-function generateInputs(characterName) {
-  const inputContainer = document.getElementById("input-container");
+function generateInputs(word) {
+  const container = document.getElementById("input-container");
+  if (!container) return console.error("input-container not found!");
 
-  if (!inputContainer) {
-    console.error("input-container not found!");
-    return;
-  }
+  const row = document.createElement("div");
+  row.className = "guess-row";
 
-  const newRow = document.createElement("div");
-  newRow.classList.add("guess-row");
-
-  for (let i = 0; i < characterName.length; i++) {
-    const char = characterName[i];
-
-    if (char.match(/[A-Za-z]/)) {
+  [...word].forEach((char) => {
+    if (/[A-Za-z]/.test(char)) {
       const input = document.createElement("input");
       input.type = "text";
-      input.classList.add("letter-input");
+      input.className = "letter-input";
       input.maxLength = 1;
-      input.id = `letter-${
-        inputContainer.querySelectorAll("input").length + 1
-      }`;
       input.placeholder = " ";
-      newRow.appendChild(input);
-
+      input.id = `letter-${container.querySelectorAll("input").length + 1}`;
       input.addEventListener("input", handleInput);
-      input.addEventListener("keydown", handleKeyDown); // Handle keydown for validation
+      input.addEventListener("keydown", handleKeyDown);
+      row.appendChild(input);
     } else {
       const span = document.createElement("span");
-      span.classList.add("pre-filled");
+      span.className = "pre-filled";
       span.textContent = char;
-      newRow.appendChild(span);
+      row.appendChild(span);
     }
-  }
+  });
 
-  inputContainer.appendChild(newRow);
-
-  // Focus on the first input after adding inputs
-  const firstInput = newRow.querySelector("input");
-  if (firstInput) firstInput.focus();
+  container.appendChild(row);
+  row.querySelector("input")?.focus();
 }
 
-function handleInput(event) {
-  const currentInput = event.target;
-
-  if (currentInput.value !== "") {
-    let next = currentInput.nextElementSibling;
-    while (next && next.tagName !== "INPUT") {
-      next = next.nextElementSibling; // Skip over spans
-    }
-    if (next) next.focus();
-  }
+function handleInput(e) {
+  const next = findNextInput(e.target);
+  if (e.target.value && next) next.focus();
 }
 
-// Handle Backspace behavior
-function handleBackspace(event) {
-  const currentInput = event.target;
-
-  let prev = currentInput.previousElementSibling;
-  while (prev && prev.tagName !== "INPUT") {
-    prev = prev.previousElementSibling; // Skip over spans
-  }
-
+function handleBackspace(e) {
+  e.target.value = "";
+  const prev = findPreviousInput(e.target);
   if (prev) {
-    prev.focus(); // Focus on the previous input
-    prev.value = ""; // Clear the current input
+    prev.focus();
+    prev.value = "";
+  } else if (!next) prev.focus();
+}
+
+function handleKeyDown(e) {
+  const isLetter = /^[a-zA-Z]$/.test(e.key);
+  const isControl = ["Backspace", "Enter"].includes(e.key);
+
+  if (!isLetter && !isControl) return e.preventDefault();
+
+  if (e.key === "Backspace") {
+    e.preventDefault();
+    handleBackspace(e);
+  } else if (e.key === "Enter") {
+    e.preventDefault();
+    const row = e.target.closest(".guess-row");
+    const allFilled = [...row.querySelectorAll("input")].every(
+      (input) => input.value.trim() !== ""
+    );
+    allFilled
+      ? checkGuess()
+      : alert("Please fill in all letters before submitting.");
   }
 }
 
-// Validate key presses to ensure only allowed keys
-function handleKeyDown(event) {
-  const validKeys = [
-    "Backspace",
-    "Enter",
-    ...Array.from(
-      "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-    ), // Only allow a-z, A-Z, 0-9
+function findPreviousInput(el) {
+  let prev = el.previousElementSibling;
+  while (prev && prev.tagName !== "INPUT") prev = prev.previousElementSibling;
+  return prev;
+}
+
+function findNextInput(el) {
+  let next = el.nextElementSibling;
+  while (next && next.tagName !== "INPUT") next = next.nextElementSibling;
+  return next;
+}
+
+document.addEventListener("DOMContentLoaded", () => generateInputs(targetWord));
+
+document.addEventListener("click", (e) => {
+  // Ignore clicks on modals, buttons inside modals, or other focusable elements
+  const ignoredSelectors = [
+    ".play-again-modal",
+    ".play-again-modal *",
+    ".message-box",
+    "a",
+    "input", // Don't refocus if user clicked on an input
+    ".key", // Allow focusing even when user clicks keyboard buttons if needed
   ];
 
-  // If the key is invalid, prevent the default behavior
-  if (!validKeys.includes(event.key)) {
-    event.preventDefault();
+  for (const selector of ignoredSelectors) {
+    if (e.target.closest(selector)) return;
   }
 
-  // Handle Backspace: remove character and focus previous input
-  if (event.key === "Backspace") {
-    event.preventDefault(); // Prevent default browser backspace behavior
-    handleBackspace(event);
-  }
+  // Focus the first empty input in the last guess row, or last input if all are filled
+  const activeRow = document.querySelector(
+    "#input-container .guess-row:last-child"
+  );
+  if (!activeRow) return;
 
-  // Handle Enter: submit guess (or any other action)
-  if (event.key === "Enter") {
-    event.preventDefault();
-    checkGuess(); // Your guess check function
-  }
-}
+  const inputs = activeRow.querySelectorAll("input");
+  const emptyInput = [...inputs].find((input) => input.value === "");
 
-document.addEventListener("DOMContentLoaded", () => {
-  generateInputs(targetWord); // Example usage
+  (emptyInput || inputs[inputs.length - 1])?.focus();
 });
