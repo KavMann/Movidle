@@ -41,7 +41,14 @@
     </header>
 
     <!-- Game Hint (screen reader accessible if used) -->
-    <section class="hint" aria-live="polite"></section>
+    <section class="hint" aria-live="polite">
+      <ul id="hint-list">
+        {% for hint in hints %}
+        <li class="hint-item" style="display: none">{{ hint }}</li>
+        {% endfor %}
+      </ul>
+      <button id="show-hint">Show Hint</button>
+    </section>
 
     <!-- Game Input Area -->
     <main
@@ -70,6 +77,7 @@
       const targetWord = "{{ word|e }}";
       console.log("Target word:", targetWord);
     </script>
+    <script src="{{ url_for('static', filename='js/hint.js') }}"></script>
     <script src="{{ url_for('static', filename='js/light-mode.js') }}"></script>
     <script src="{{ url_for('static', filename='js/keyboard.js') }}"></script>
     <script src="{{ url_for('static', filename='js/input.js') }}"></script>

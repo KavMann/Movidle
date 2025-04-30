@@ -72,9 +72,15 @@ function checkGuess() {
     return;
   }
 
+  if (guess !== word) {
+    registerGuess(false);
+  }
+
   if (document.querySelectorAll(".guess-row").length > 5) {
-    showEndMessage(`No more guesses! The movie was:\n${targetWord}`);
-    revealAnswer(targetWord.toLowerCase());
+    showEndMessage(
+      `No more guesses! The movie was:\n${targetWord}`,
+      word.length
+    );
     setTimeout(
       () => showNextTimeModal(updateStreak(false)),
       word.length * 300 + 600
@@ -83,28 +89,6 @@ function checkGuess() {
   }
 
   createNewRow();
-}
-
-function revealAnswer(answer) {
-  const row = document.createElement("div");
-  row.className = "guess-row";
-
-  for (const char of answer) {
-    const el = /[A-Za-z]/.test(char)
-      ? Object.assign(document.createElement("input"), {
-          type: "text",
-          className: "letter-input green",
-          value: char.toUpperCase(),
-          disabled: true,
-        })
-      : Object.assign(document.createElement("span"), {
-          className: "pre-filled",
-          textContent: char,
-        });
-    row.appendChild(el);
-  }
-
-  document.getElementById("input-container").appendChild(row);
 }
 
 function updateKeyboardColors() {
@@ -126,15 +110,15 @@ function createNewRow() {
     }, targetWord.length * 300 + 300)
   );
 
-  setTimeout(() => generateInputs(targetWord), targetWord.length * 300 + 600);
+  setTimeout(() => generateInputs(targetWord), targetWord.length * 300 + 300);
 }
 
-function showEndMessage(msg) {
+function showEndMessage(msg, wordLength) {
   const box = document.createElement("div");
   box.className = "message-box";
   box.innerText = msg;
   document.body.appendChild(box);
-  setTimeout(() => box.remove(), 3000);
+  setTimeout(() => box.remove(), wordLength * 300 + 500);
 }
 
 function showPlayAgainModal(streak) {

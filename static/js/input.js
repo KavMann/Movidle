@@ -15,6 +15,7 @@ function generateInputs(word) {
       input.id = `letter-${container.querySelectorAll("input").length + 1}`;
       input.addEventListener("input", handleInput);
       input.addEventListener("keydown", handleKeyDown);
+
       row.appendChild(input);
     } else {
       const span = document.createElement("span");
