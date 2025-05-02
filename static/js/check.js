@@ -1,3 +1,4 @@
+// Check.js
 const keyState = {};
 
 function updateStreak(won) {
@@ -66,7 +67,7 @@ function checkGuess() {
 
   if (guess === word) {
     setTimeout(
-      () => showPlayAgainModal(updateStreak(true)),
+      () => showPlayAgainModal(updateStreak(true)), // Call from modal.js
       word.length * 300 + 600
     );
     return;
@@ -76,13 +77,21 @@ function checkGuess() {
     registerGuess(false);
   }
 
+  if (document.querySelectorAll(".guess-row").length > 4) {
+    showEndMessage(
+      // Call from modal.js
+      `Final guess! Click: <div id="lottie-howto-icon" style="width: 35px; height: 35px"></div> If you want help!`
+    );
+  }
+
   if (document.querySelectorAll(".guess-row").length > 5) {
     showEndMessage(
+      // Call from modal.js
       `No more guesses! The movie was:\n${targetWord}`,
       word.length
     );
     setTimeout(
-      () => showNextTimeModal(updateStreak(false)),
+      () => showNextTimeModal(updateStreak(false)), // Call from modal.js
       word.length * 300 + 600
     );
     return;
@@ -113,40 +122,42 @@ function createNewRow() {
   setTimeout(() => generateInputs(targetWord), targetWord.length * 300 + 300);
 }
 
-function showEndMessage(msg, wordLength) {
-  const box = document.createElement("div");
-  box.className = "message-box";
-  box.innerText = msg;
-  document.body.appendChild(box);
-  setTimeout(() => box.remove(), wordLength * 300 + 500);
-}
-
-function showPlayAgainModal(streak) {
-  showModal(
-    "🎉 Congratulations!",
-    `Come back tomorrow for a new movie!<br><strong>Current Streak:</strong> ${streak} 🔥`
+function fillRandomLetter() {
+  const currentInputs = Array.from(
+    document.querySelectorAll("#input-container .guess-row:last-child input")
   );
-}
 
-function showNextTimeModal(streak) {
-  showModal(
-    "💔 Unlucky! Next Time",
-    `Come back tomorrow for a new movie!<br><strong>Current Streak:</strong> ${streak} 🔥`
-  );
-}
+  // Create a mapping of input indices that correspond to valid letter positions
+  const letterPositions = [...targetWord]
+    .map((char, index) => (/[a-z]/i.test(char) ? index : -1))
+    .filter((index) => index !== -1);
 
-function showModal(title, content) {
-  const modal = document.createElement("div");
-  modal.className = "play-again-modal";
-  modal.innerHTML = `
-    <div class="modal-content">
-      <h2>${title}</h2>
-      <p>${content}</p>
-      <button onclick="closeModal()">OK</button>
-    </div>`;
-  document.body.appendChild(modal);
-}
+  const emptyIndexes = currentInputs
+    .map((input, index) => (input.value === "" ? index : -1))
+    .filter((index) => index !== -1);
 
-function closeModal() {
-  document.querySelector(".play-again-modal")?.remove();
+  if (emptyIndexes.length === 0) {
+    alert("No empty letters to fill!");
+    return;
+  }
+
+  // Pick one random empty input index
+  const randomEmptyIndex =
+    emptyIndexes[Math.floor(Math.random() * emptyIndexes.length)];
+
+  // Map the input index to the correct letter index in targetWord
+  const targetIndex = letterPositions[randomEmptyIndex];
+
+  if (targetIndex === undefined) {
+    alert("Could not determine correct letter position.");
+    return;
+  }
+
+  const correctLetter = targetWord[targetIndex]?.toUpperCase();
+
+  if (/[A-Z]/i.test(correctLetter)) {
+    currentInputs[randomEmptyIndex].value = correctLetter;
+  } else {
+    alert("Target character is not a valid letter.");
+  }
 }

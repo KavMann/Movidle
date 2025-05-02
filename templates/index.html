@@ -34,39 +34,50 @@
     <header role="banner">
       <h1 tabindex="0">Movidle</h1>
       <div class="menu">
+        <button
+          id="howToPlayButton"
+          class="help-button"
+          aria-label="How to Play"
+        >
+          <div id="lottie-howto-icon" style="width: 35px; height: 35px"></div>
+        </button>
+        <div class="dropdown">
+          <button
+            id="help-toggle"
+            class="dropbtn"
+            aria-label="Show Hint Options"
+          >
+            <div id="lottie-help-icon" style="width: 50px; height: 50px"></div>
+          </button>
+          <div id="hintDropdown" class="dropdown-content">
+            <button id="getHintButton">Get Hint</button>
+            <button id="fillLetterButton">Fill a Letter</button>
+          </div>
+        </div>
         <button id="theme-toggle" aria-label="Toggle theme">
           <div id="lottie-theme-icon" style="width: 50px; height: 50px"></div>
         </button>
       </div>
     </header>
 
-    <!-- Game Hint (screen reader accessible if used) -->
-    <section class="hint" aria-live="polite">
-      <ul id="hint-list">
-        {% for hint in hints %}
-        <li class="hint-item" style="display: none">{{ hint }}</li>
-        {% endfor %}
-      </ul>
-      <button id="show-hint">Show Hint</button>
-    </section>
-
     <!-- Game Input Area -->
-    <main
-      id="game-area"
-      class="input-section"
-      aria-label="Movie Guessing Input"
-      role="main"
-    >
-      <div id="input-container" aria-label="Input rows for guess"></div>
-    </main>
+    <div class="scalable-wrapper">
+      <main
+        id="game-area"
+        class="input-section"
+        aria-label="Movie Guessing Input"
+        role="main"
+      >
+        <div id="input-container" aria-label="Input rows for guess"></div>
+      </main>
 
-    <!-- On-Screen Keyboard -->
-    <section class="keyboard" role="region" aria-label="On-screen Keyboard">
-      <div class="row" id="row1" aria-label="Keyboard row 1"></div>
-      <div class="row" id="row2" aria-label="Keyboard row 2"></div>
-      <div class="row" id="row3" aria-label="Keyboard row 3"></div>
-    </section>
-
+      <!-- On-Screen Keyboard -->
+      <section class="keyboard" role="region" aria-label="On-screen Keyboard">
+        <div class="row" id="row1" aria-label="Keyboard row 1"></div>
+        <div class="row" id="row2" aria-label="Keyboard row 2"></div>
+        <div class="row" id="row3" aria-label="Keyboard row 3"></div>
+      </section>
+    </div>
     <!-- Footer -->
     <footer role="contentinfo">
       <p>&copy; 2024 Movidle. All rights reserved.</p>
@@ -74,13 +85,16 @@
 
     <!-- Game Word and Scripts -->
     <script>
-      const targetWord = "{{ word|e }}";
-      console.log("Target word:", targetWord);
+        window.targetWord = "{{ word|e }}";
+        window.gameHints = {{ hints | tojson }}; //  <---  CHANGED THIS LINE
+      console.log("Target word:", window.targetWord);
+      console.log("Game hints:", window.gameHints);
     </script>
-    <script src="{{ url_for('static', filename='js/hint.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/light-mode.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/keyboard.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/input.js') }}"></script>
     <script src="{{ url_for('static', filename='js/check.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/hint.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/input.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/keyboard.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/light-mode.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/modal.js') }}"></script>
   </body>
 </html>

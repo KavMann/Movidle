@@ -1,3 +1,4 @@
+// input.js
 function generateInputs(word) {
   const container = document.getElementById("input-container");
   if (!container) return console.error("input-container not found!");
@@ -30,8 +31,19 @@ function generateInputs(word) {
 }
 
 function handleInput(e) {
-  const next = findNextInput(e.target);
-  if (e.target.value && next) next.focus();
+  const inputs = Array.from(
+    e.target.closest(".guess-row").querySelectorAll("input")
+  );
+  const currentIndex = inputs.indexOf(e.target);
+
+  if (e.target.value) {
+    for (let i = currentIndex + 1; i < inputs.length; i++) {
+      if (!inputs[i].value) {
+        inputs[i].focus();
+        break;
+      }
+    }
+  }
 }
 
 function handleBackspace(e) {

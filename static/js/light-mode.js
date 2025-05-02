@@ -1,3 +1,4 @@
+// Light-mode.js
 document.addEventListener("DOMContentLoaded", function () {
   const lightModeStylesheet = document.getElementById("light-mode-css");
 
@@ -9,7 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
     renderer: "svg",
     loop: false,
     autoplay: false,
-    path: "/static/js/theme-toggle.json",
+    path: "/static/animations/theme-toggle.json",
   });
 
   const DARK_MODE_FRAME = 274;

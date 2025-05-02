@@ -10,7 +10,7 @@ hint_cache = {}  # Cache for generated hints
 def get_movie_titles():
     with open('movies.csv', newline='', encoding='utf-8') as csvfile:
         reader = csv.reader(csvfile)
-        return [row[0] for row in reader if row]  # Assuming first column is title
+        return [row[0] for row in reader if row and len(row[0]) < 20]  # Assuming first column is title
 
 @app.route('/')
 def index():
@@ -28,4 +28,4 @@ def index():
     return render_template('index.html', word=chosen_title, hints=hint_cache[chosen_title])
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)

@@ -1,6 +1,10 @@
+/* === keyboard.css === */
+
 .keyboard {
-  display: inline-block;
-  background-color: #121212;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* <-- this centers the rows inside */
+  justify-content: center;
 }
 .row {
   display: flex;
