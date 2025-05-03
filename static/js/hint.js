@@ -44,7 +44,8 @@ function showHintModal(content) {
   box.innerHTML = `
         <div class="hint-content">
             ${hintList}
-            <button id="closeHintButton">OK</button>
+            <div class="modal-button-wrapper">
+          <button id="closeHintButton">OK</button>
         </div>
     `;
   document.body.appendChild(box);

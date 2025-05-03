@@ -72,17 +72,17 @@ function showhowModal(title, content) {
   document.body.appendChild(modal);
 
   const closeModalButton = document.getElementById("closeModalButton");
-  closeModalButton.addEventListener("click", closeModal);
+  closeModalButton.addEventListener("click", closeModall);
 }
 
-function closeModal() {
+function closeModall() {
   document.querySelector(".how-to-modal")?.remove();
 }
 
 function showEndMessage(msg, wordLength) {
   const box = document.createElement("div");
   box.className = "message-box";
-  box.innerText = msg;
+  box.innerHTML = msg;
   document.body.appendChild(box);
   setTimeout(() => box.remove(), wordLength * 300 + 500);
 }

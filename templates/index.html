@@ -85,10 +85,8 @@
 
     <!-- Game Word and Scripts -->
     <script>
-        window.targetWord = "{{ word|e }}";
-        window.gameHints = {{ hints | tojson }}; //  <---  CHANGED THIS LINE
-      console.log("Target word:", window.targetWord);
-      console.log("Game hints:", window.gameHints);
+      window.targetWord = "{{ word|e }}";
+      window.gameHints = {{ hints | tojson }};
     </script>
     <script src="{{ url_for('static', filename='js/check.js') }}"></script>
     <script src="{{ url_for('static', filename='js/hint.js') }}"></script>

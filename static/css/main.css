@@ -67,6 +67,11 @@ button,
   transition: opacity 0.3s ease;
 }
 
+#closeHintButton,
+.modal-content button {
+  background: #00000063;
+}
+
 button:hover,
 .help-button:hover,
 .dropbtn:hover,

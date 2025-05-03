@@ -79,8 +79,8 @@ function checkGuess() {
 
   if (document.querySelectorAll(".guess-row").length > 4) {
     showEndMessage(
-      // Call from modal.js
-      `Final guess! Click: <div id="lottie-howto-icon" style="width: 35px; height: 35px"></div> If you want help!`
+      `Final guess! Click: <img src="/static/animations/hint.gif" alt="Hint icon" style="width: 35px; height: 35px; vertical-align: middle;" /> if you want help!`,
+      word.length
     );
   }
 
@@ -127,26 +127,42 @@ function fillRandomLetter() {
     document.querySelectorAll("#input-container .guess-row:last-child input")
   );
 
-  // Create a mapping of input indices that correspond to valid letter positions
+  const allPreviousRows = Array.from(
+    document.querySelectorAll("#input-container .guess-row.past-guess")
+  );
+
+  const correctPositions = new Set();
+
+  // Loop over previous guesses to collect correct positions
+  allPreviousRows.forEach((row) => {
+    const inputs = row.querySelectorAll("input");
+    inputs.forEach((input, index) => {
+      if (input.classList.contains("green")) {
+        correctPositions.add(index);
+      }
+    });
+  });
+
+  // Get valid letter indices in targetWord (skip spaces/symbols)
   const letterPositions = [...targetWord]
     .map((char, index) => (/[a-z]/i.test(char) ? index : -1))
     .filter((index) => index !== -1);
 
-  const emptyIndexes = currentInputs
-    .map((input, index) => (input.value === "" ? index : -1))
+  // Find empty input indexes that are NOT already guessed correctly
+  const eligibleIndexes = currentInputs
+    .map((input, index) =>
+      input.value === "" && !correctPositions.has(index) ? index : -1
+    )
     .filter((index) => index !== -1);
 
-  if (emptyIndexes.length === 0) {
+  if (eligibleIndexes.length === 0) {
     alert("No empty letters to fill!");
     return;
   }
 
-  // Pick one random empty input index
-  const randomEmptyIndex =
-    emptyIndexes[Math.floor(Math.random() * emptyIndexes.length)];
-
-  // Map the input index to the correct letter index in targetWord
-  const targetIndex = letterPositions[randomEmptyIndex];
+  const randomIndex =
+    eligibleIndexes[Math.floor(Math.random() * eligibleIndexes.length)];
+  const targetIndex = letterPositions[randomIndex];
 
   if (targetIndex === undefined) {
     alert("Could not determine correct letter position.");
@@ -155,8 +171,8 @@ function fillRandomLetter() {
 
   const correctLetter = targetWord[targetIndex]?.toUpperCase();
 
-  if (/[A-Z]/i.test(correctLetter)) {
-    currentInputs[randomEmptyIndex].value = correctLetter;
+  if (/[A-Z]/.test(correctLetter)) {
+    currentInputs[randomIndex].value = correctLetter;
   } else {
     alert("Target character is not a valid letter.");
   }
