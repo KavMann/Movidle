@@ -53,14 +53,7 @@
   transform: scale(1.05);
 }
 
-.key.special1 {
-  flex: 1.5; /* Make ENTER and DELETE wider */
-  max-width: 100px;
-  max-height: 65px;
-  font-size: small;
-}
-
-.key.special2 {
+.key.special {
   flex: 1.5; /* Make ENTER and DELETE wider */
   max-width: 100px;
   max-height: 65px;

@@ -157,7 +157,6 @@ button:hover,
 
 .guess-row {
   display: flex;
-  flex-wrap: wrap;
   justify-content: center;
   gap: 2px;
   margin-bottom: 10px;
@@ -171,7 +170,7 @@ button:hover,
 
 .letter-input,
 input.letter-input {
-  flex: 1 1 30px; /* ✅ allows it to shrink and grow with base size 30px */
+  width: 100%;
   max-width: 50px;
   min-width: 20px;
   margin: 5px;

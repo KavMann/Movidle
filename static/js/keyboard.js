@@ -2,20 +2,14 @@
 const layout = [
   ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
   ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
-  ["ENTER", "Z", "X", "C", "V", "B", "N", "M", "⌫"],
+  ["↵", "Z", "X", "C", "V", "B", "N", "M", "⌫"],
 ];
 
 let lastFocusedInput = null;
 
 const createKeyButton = (key) => {
   const btn = document.createElement("div");
-  if (key === "ENTER") {
-    btn.className = "key special1";
-  } else if (key === "⌫") {
-    btn.className = "key special2";
-  } else {
-    btn.className = "key";
-  }
+  btn.className = "key" + (["↵", "⌫"].includes(key) ? " special" : "");
   btn.textContent = key;
   btn.addEventListener("click", () => handleKeyClick(key));
   return btn;
@@ -44,7 +38,7 @@ function handleKeyClick(key) {
       prev.focus();
       prev.value = "";
     }
-  } else if (key === "ENTER") {
+  } else if (key === "↵") {
     const allFilled = inputs.every((input) => input.value.trim() !== "");
     allFilled
       ? checkGuess()
