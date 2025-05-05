@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0  user-scalable=no"
+    />
     <meta name="description" content="Guess the movie title, Wordle-style!" />
     <title>Movidle</title>
 
@@ -62,31 +65,29 @@
 
     <!-- Game Input Area -->
     <div class="scalable-wrapper">
-      <main
-        id="game-area"
-        class="input-section"
-        aria-label="Movie Guessing Input"
-        role="main"
-      >
-        <div id="input-container" aria-label="Input rows for guess"></div>
+      <main id="game-area" class="input-section">
+        <div id="input-container"></div>
       </main>
+    </div>
 
-      <!-- On-Screen Keyboard -->
-      <section class="keyboard" role="region" aria-label="On-screen Keyboard">
-        <div class="row" id="row1" aria-label="Keyboard row 1"></div>
-        <div class="row" id="row2" aria-label="Keyboard row 2"></div>
-        <div class="row" id="row3" aria-label="Keyboard row 3"></div>
+    <div class="keyboard-wrapper">
+      <section class="keyboard">
+        <div class="row" id="row1"></div>
+        <div class="row" id="row2"></div>
+        <div class="row" id="row3"></div>
       </section>
     </div>
+
     <!-- Footer -->
     <footer role="contentinfo">
-      <p>&copy; 2024 Movidle. All rights reserved.</p>
+      <p>&copy; 2025 Movidle. All rights reserved.</p>
     </footer>
 
     <!-- Game Word and Scripts -->
     <script>
       window.targetWord = "{{ word|e }}";
       window.gameHints = {{ hints | tojson }};
+      console.log("Target word:", window.targetWord);
     </script>
     <script src="{{ url_for('static', filename='js/check.js') }}"></script>
     <script src="{{ url_for('static', filename='js/hint.js') }}"></script>
