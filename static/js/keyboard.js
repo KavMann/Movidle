@@ -9,7 +9,13 @@ let lastFocusedInput = null;
 
 const createKeyButton = (key) => {
   const btn = document.createElement("div");
-  btn.className = "key" + (["ENTER", "⌫"].includes(key) ? " special" : "");
+  if (key === "ENTER") {
+    btn.className = "key special1";
+  } else if (key === "⌫") {
+    btn.className = "key special2";
+  } else {
+    btn.className = "key";
+  }
   btn.textContent = key;
   btn.addEventListener("click", () => handleKeyClick(key));
   return btn;

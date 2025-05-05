@@ -1,37 +1,68 @@
-/* === keyboard.css === */
+.keyboard-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  position: absolute;
+  bottom: 10%;
+  width: 100%;
+  z-index: 10;
+}
 
 .keyboard {
+  width: 90vw; /* Responsive */
   display: flex;
   flex-direction: column;
-  align-items: center; /* <-- this centers the rows inside */
-  justify-content: center;
+  gap: 8px;
 }
+
 .row {
   display: flex;
   justify-content: center;
-  margin-bottom: 8px;
+  gap: 6px;
 }
+
+/* Key layout inspired by Wordle */
 .key {
-  padding: 20px;
-  margin: 5px;
-  min-width: 25px;
-  text-align: center;
-  background-color: #9c9c9c;
-  color: rgb(20, 20, 20);
+  flex: 1;
+  max-width: 65px;
+  min-width: 32px;
+  max-height: 65px;
+  aspect-ratio: 1 / 2;
+  background-color: #818384;
+  color: #f3f3f3;
   font-weight: bold;
-  font-size: 18px;
+  font-size: clamp(14px, 4vw, 18px);
   border-radius: 6px;
+  text-align: center;
   cursor: pointer;
   user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
   transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
-.key:hover {
-  background-color: #9e9e9e;
-  transform: scale(1.1);
+#row2 {
+  padding: 0 24px; /* adjust value until the keys line up visually */
 }
 
-.key.special {
-  min-width: 63px;
+.key:hover {
+  background-color: #a8a8a8;
+  transform: scale(1.05);
+}
+
+.key.special1 {
+  flex: 1.5; /* Make ENTER and DELETE wider */
+  max-width: 100px;
+  max-height: 65px;
+  font-size: small;
+}
+
+.key.special2 {
+  flex: 1.5; /* Make ENTER and DELETE wider */
+  max-width: 100px;
+  max-height: 65px;
+  font-size: 32px;
 }

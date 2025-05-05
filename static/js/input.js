@@ -1,10 +1,17 @@
 // input.js
+// Function to check if the device is mobile
+function isMobileDevice() {
+  return /Mobi|Android/i.test(navigator.userAgent);
+}
+
 function generateInputs(word) {
   const container = document.getElementById("input-container");
   if (!container) return console.error("input-container not found!");
 
   const row = document.createElement("div");
   row.className = "guess-row";
+
+  const isMobile = isMobileDevice(); // Check if device is mobile
 
   [...word].forEach((char) => {
     if (/[A-Za-z]/.test(char)) {
@@ -14,6 +21,10 @@ function generateInputs(word) {
       input.maxLength = 1;
       input.placeholder = " ";
       input.id = `letter-${container.querySelectorAll("input").length + 1}`;
+
+      // Set readOnly based on device type
+      input.readOnly = isMobile; // Set to true if mobile, false if desktop
+
       input.addEventListener("input", handleInput);
       input.addEventListener("keydown", handleKeyDown);
 

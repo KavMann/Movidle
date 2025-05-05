@@ -2,6 +2,7 @@
 
 html {
   overflow-x: hidden;
+  overflow: hidden;
 }
 
 body {
@@ -154,7 +155,14 @@ button:hover,
   transition: background-color 0.4s ease;
 }
 
-.guess-row,
+.guess-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2px;
+  margin-bottom: 10px;
+}
+
 .input-row {
   display: flex;
   justify-content: center;
@@ -163,8 +171,9 @@ button:hover,
 
 .letter-input,
 input.letter-input {
-  width: 50px;
-  height: 50px;
+  flex: 1 1 30px; /* ✅ allows it to shrink and grow with base size 30px */
+  max-width: 50px;
+  min-width: 20px;
   margin: 5px;
   font-size: 24px;
   text-align: center;
@@ -178,6 +187,7 @@ input.letter-input {
   position: relative;
   transition: background-color 0.4s ease, color 0.4s ease,
     border-color 0.4s ease, box-shadow 0.4s ease;
+  aspect-ratio: 1;
 }
 
 .letter-input:focus {
@@ -343,6 +353,8 @@ input.flip {
 .past-guess {
   transform: scale(0.85);
   opacity: 0.7;
+  flex-wrap: nowrap;
+  transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
 .flip-in {
@@ -405,30 +417,5 @@ input.flip {
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-.scalable-wrapper {
-  transform-origin: top center;
-  transition: transform 0.3s ease;
-  transform: scale(1);
-  overflow-x: hidden;
-}
-
-@media (max-width: 750px) {
-  .scalable-wrapper {
-    transform: scale(0.5);
-  }
-}
-
-@media (max-width: 600px) {
-  .scalable-wrapper {
-    transform: scale(0.43);
-  }
-}
-
-@media (max-width: 400px) {
-  .scalable-wrapper {
-    transform: scale(0.35);
   }
 }
