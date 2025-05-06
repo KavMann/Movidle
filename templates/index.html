@@ -5,6 +5,8 @@
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0,  user-scalable=no"
+      ,
+      maximum-scale="1.0"
     />
     <meta name="description" content="Guess the movie title, Wordle-style!" />
     <title>Movidle</title>
@@ -24,6 +26,8 @@
       id="light-mode-css"
       disabled
     />
+    <!-- Add in <head> -->
+    <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- Google Material Icons -->
     <link
@@ -35,7 +39,14 @@
   <body>
     <!-- Header / Navigation -->
     <header role="banner">
-      <h1 tabindex="0">Movidle</h1>
+      <h1 class="sr-only">Movidle</h1>
+      <img
+        src="static/animations/Logo.png"
+        alt="Movidle logo"
+        tabindex="0"
+        class="h-16 w-auto"
+      />
+
       <div class="menu">
         <button
           id="howToPlayButton"
@@ -70,12 +81,18 @@
       </main>
     </div>
 
-    <div class="keyboard-wrapper">
-      <section class="keyboard">
-        <div class="row" id="row1"></div>
-        <div class="row" id="row2"></div>
-        <div class="row" id="row3"></div>
-      </section>
+    <div
+      class="keyboard-wrapper fixed bottom-[10%] w-full z-10 flex justify-center items-center p-2"
+    >
+      <div
+        class="keyboard w-[97vw] flex flex-col gap-2"
+        role="group"
+        aria-label="On-screen keyboard"
+      >
+        <div id="row1" class="row flex justify-center gap-1"></div>
+        <div id="row2" class="row flex justify-center gap-1 px-6"></div>
+        <div id="row3" class="row flex justify-center gap-1"></div>
+      </div>
     </div>
 
     <!-- Footer -->

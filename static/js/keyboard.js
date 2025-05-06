@@ -8,8 +8,23 @@ const layout = [
 let lastFocusedInput = null;
 
 const createKeyButton = (key) => {
-  const btn = document.createElement("div");
-  btn.className = "key" + (["↵", "⌫"].includes(key) ? " special" : "");
+  const btn = document.createElement("button");
+  btn.setAttribute("type", "button");
+  btn.setAttribute(
+    "aria-label",
+    key === "↵" ? "Enter" : key === "⌫" ? "Delete" : `Letter ${key}`
+  );
+  btn.className = `
+    flex items-center justify-center select-none
+    font-bold text-white text-sm sm:text-base
+    rounded-md shadow transition transform
+    ${
+      ["↵", "⌫"].includes(key)
+        ? "flex-[1.5] max-w-[100px] text-lg bg-neutral-600 hover:bg-neutral-700"
+        : "flex-1 min-w-[36px] max-w-[65px] aspect-[1/1.3] bg-neutral-500 hover:bg-neutral-600"
+    }
+  `;
+  btn.className += " touch-manipulation";
   btn.textContent = key;
   btn.addEventListener("click", () => handleKeyClick(key));
   return btn;
