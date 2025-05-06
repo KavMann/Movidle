@@ -10,7 +10,7 @@
 }
 
 .keyboard {
-  width: 90vw; /* Responsive */
+  width: 97vw; /* Responsive */
   display: flex;
   flex-direction: column;
   gap: 8px;
