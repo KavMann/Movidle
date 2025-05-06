@@ -24,20 +24,18 @@ def add_title_to_used(title):
     with open(USED_TITLES_FILE, 'a', encoding='utf-8') as f:
         f.write(title.strip() + '\n')
 
-def generate_movie_title():
+def generate_movie_title(max_length):
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
         return None
 
     prompt = (
-    "Give me the title of a random, well-known English-language movie from any year or genre. "
-    "Avoid picking only the most popular or recent titles. "
-    "Choose from a wide range across decades, with the oldest being from 1980. "
-    "The movie title should not exceed 18 characters in length. "
-    "Only return the plain movie title, with no punctuation, formatting, or extra text. "
-    "Do not include quotes or anything else—just the movie name."
-)
-
+        f"Give me the title of a random, well-known English-language movie from any year or genre. "
+        f"Avoid picking only the most popular or recent titles. "
+        f"Choose from a wide range across decades, from 1980 onwards. "
+        f"The movie title should not exceed {max_length} characters in length. "
+        f"Only return the plain movie title. Do not include quotes, formatting, or any extra text—just the movie name."
+    )
 
     payload = {
         "contents": [
@@ -61,8 +59,9 @@ def generate_movie_title():
     except:
         return None
 
-def get_daily_title(fallback_title="Inception"):
+def get_daily_title(is_mobile, fallback_title="Inception"):
     today = date.today().isoformat()
+    cache_key = f"{today}-mobile" if is_mobile else f"{today}-desktop"
 
     if os.path.exists(CACHE_FILE):
         with open(CACHE_FILE, "r") as f:
@@ -70,24 +69,22 @@ def get_daily_title(fallback_title="Inception"):
     else:
         cache = {}
 
-    # Return cached title if already selected
-    if today in cache:
-        return cache[today]
+    if cache_key in cache:
+        return cache[cache_key]
 
     used_titles = get_used_titles()
+    max_length = 10 if is_mobile else 18
 
-    # Try generating a new unique title
     for _ in range(5):
-        title = generate_movie_title()
-        if title and title not in used_titles and len(title) < 30:
-            cache[today] = title
+        title = generate_movie_title(max_length)
+        if title and title not in used_titles:
+            cache[cache_key] = title
             add_title_to_used(title)
             with open(CACHE_FILE, "w") as f:
                 json.dump(cache, f, indent=2)
             return title
 
-    # Fallback if generation fails
-    cache[today] = fallback_title
+    cache[cache_key] = fallback_title
     with open(CACHE_FILE, "w") as f:
         json.dump(cache, f, indent=2)
     return fallback_title
