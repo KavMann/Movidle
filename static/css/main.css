@@ -201,8 +201,7 @@ hr {
 }
 
 .letter-input,
-input.letter-input,
-.list-example {
+input.letter-input {
   width: 100%;
   max-width: 50px;
   min-width: 20px;
@@ -222,8 +221,25 @@ input.letter-input,
   aspect-ratio: 1;
 }
 
-.letter-input:focus,
-.list-example:focus {
+.list-example {
+  display: inline-grid;
+  width: 25px;
+  height: 25px;
+  margin: 2px;
+  font-size: 20px;
+  text-align: center;
+  text-transform: uppercase;
+  caret-color: transparent;
+  background: #121212;
+  color: rgb(216, 216, 216);
+  border: none;
+  border-radius: 5px;
+  outline: 1px solid #ccc;
+  position: relative;
+  transition: background-color 0.4s ease, color 0.4s ease,
+    border-color 0.4s ease, box-shadow 0.4s ease;
+}
+.letter-input:focus {
   outline: none;
   border-color: #27da2d77;
   box-shadow: 0 0 5px #53f056c2;
