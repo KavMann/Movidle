@@ -15,7 +15,7 @@ const createKeyButton = (key) => {
     key === "↵" ? "Enter" : key === "⌫" ? "Delete" : `Letter ${key}`
   );
   btn.className = `
-    flex items-center justify-center select-none
+    key flex items-center justify-center select-none
     font-bold text-white text-sm sm:text-base
     rounded-md shadow transition transform
     ${

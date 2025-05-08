@@ -32,18 +32,36 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   document.getElementById("theme-toggle").addEventListener("click", () => {
-    if (isInLightMode) {
-      animation.playSegments([LIGHT_MODE_FRAME, DARK_MODE_FRAME], true);
-      document.body.classList.remove("light-mode");
-      lightModeStylesheet.disabled = true;
-      localStorage.removeItem("mode");
-    } else {
-      animation.playSegments([DARK_MODE_FRAME, FRAME_END], true);
-      document.body.classList.add("light-mode");
-      lightModeStylesheet.disabled = false;
-      localStorage.setItem("mode", "light");
-    }
+    // ➤ Determine transition direction
+    const transitionClass = isInLightMode ? "light-to-dark" : "dark-to-light";
 
-    isInLightMode = !isInLightMode;
+    // ➤ Start blur and tint transition
+    document.body.classList.add("theme-transition", transitionClass);
+
+    setTimeout(() => {
+      // ➤ Toggle theme + animation
+      if (isInLightMode) {
+        animation.playSegments([LIGHT_MODE_FRAME, DARK_MODE_FRAME], true);
+        document.body.classList.remove("light-mode");
+        lightModeStylesheet.disabled = true;
+        localStorage.removeItem("mode");
+      } else {
+        animation.playSegments([DARK_MODE_FRAME, FRAME_END], true);
+        document.body.classList.add("light-mode");
+        lightModeStylesheet.disabled = false;
+        localStorage.setItem("mode", "light");
+      }
+
+      isInLightMode = !isInLightMode;
+    }, 100); // short delay so animation starts before theme switch
+
+    setTimeout(() => {
+      // ➤ Clean up transition classes
+      document.body.classList.remove(
+        "theme-transition",
+        "light-to-dark",
+        "dark-to-light"
+      );
+    }, 500); // match CSS animation time
   });
 });

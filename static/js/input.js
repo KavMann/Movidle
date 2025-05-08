@@ -110,6 +110,8 @@ document.addEventListener("click", (e) => {
     "a",
     "input", // Don't refocus if user clicked on an input
     ".key", // Allow focusing even when user clicks keyboard buttons if needed
+    "#language-toggle",
+    "#languageDropdown",
   ];
 
   for (const selector of ignoredSelectors) {

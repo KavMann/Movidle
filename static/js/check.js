@@ -1,4 +1,5 @@
 // Check.js
+
 const keyState = {};
 
 function updateStreak(won) {
@@ -24,11 +25,41 @@ function updateStreak(won) {
   return streak;
 }
 
+function isGuessSegmentedValid(row) {
+  const segments = [];
+  let currentWord = "";
+
+  for (const el of row.children) {
+    if (el.tagName === "INPUT") {
+      currentWord += el.value.toLowerCase();
+    } else if (el.tagName === "SPAN") {
+      if (currentWord) segments.push(currentWord);
+      currentWord = "";
+    }
+  }
+
+  if (currentWord) segments.push(currentWord); // add the last chunk
+
+  return segments.every((word) => validWords.has(word));
+}
+
 function checkGuess() {
+  const row = document.querySelector("#input-container .guess-row:last-child");
+  if (!row) return;
+
+  const inputs = row.querySelectorAll("input");
+  const allFilled = [...inputs].every((input) => input.value.trim() !== "");
+
+  if (!allFilled) {
+    return alert("Please fill in all letters before submitting.");
+  }
+
+  // ✅ Validate segments
+  if (!isGuessSegmentedValid(row)) {
+    return alert("Each word segment must be a real English word.");
+  }
+
   const word = targetWord.toLowerCase().replace(/[^a-z]/g, "");
-  const inputs = document.querySelectorAll(
-    "#input-container .guess-row:last-child input"
-  );
   const guess = [...inputs].map((i) => i.value.toLowerCase()).join("");
 
   const result = Array(word.length).fill("grey");

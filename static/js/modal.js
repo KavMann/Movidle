@@ -62,7 +62,7 @@ function showhowModal(title, content) {
   modal.className = "how-to-modal";
   modal.innerHTML = `
       <div class="modal-content">
-        <h2>${title}</h2>
+        <h2 style="font-size: 25px">${title}</h2>
         <p>${content}</p>
         <div class="modal-button-wrapper">
           <button id="closeModalButton">OK</button>
@@ -103,13 +103,13 @@ function showNextTimeModal(streak) {
 
 function showHowToPlayModal() {
   const howToPlayTitle = "How To Play Movidle";
-  const howToPlayContent = `
-        Guess the movie in 6 tries.<br><br>
+  const howToPlayContent = `<br>
+        Guess the movie in 6 tries.<br>
         - Each guess must be a valid movie title/word.<br>
         - Hit the enter button to submit.<br>
         - After each guess, the color of the tiles will change to show how close your guess was to the movie.
         <br><br>
-        <b>Examples</b><br><br>
+        <b>Examples</b><br>
         F is in the title and in the correct spot.<br>
         <div class="example-row">
             <span class="list-example flip green">F</span>
@@ -117,25 +117,38 @@ function showHowToPlayModal() {
             <span class="list-example">G</span>
             <span class="list-example">H</span>
             <span class="list-example">T</span>
-        </div><br><br>
-        V is in the title but in the wrong spot.<br><br>
+        </div><br>
+        V is in the title but in the wrong spot.<br>
         <div class="example-row">
             <span class="list-example">A</span>
             <span class="list-example flip yellow">V</span>
             <span class="list-example">A</span>
             <span class="list-example">T</span>
             <span class="list-example">A</span>
-        </div><br><br>
-        N is not in the title in any spot.<br><br>
+        </div><br>
+        N is not in the title in any spot.<br>
         <div class="example-row">
             <span class="list-example">T</span>
             <span class="list-example">I</span>
             <span class="list-example">T</span>
             <span class="list-example">A</span>
             <span class="list-example flip grey">N</span>
-        </div>
-        
-    `;
+        </div><br><br>
+
+    <b>Additional Features</b><br>
+    <!-- Language button description -->
+<div class="inline-flex items-center mb-2">
+  <img src="/static/animations/language.gif" alt="Language icon" style="width: 35px; height: 35px; margin-right: 8px;" />
+  <span>This button allows you to change the language in order to get language/region-specific titles, enhancing your gaming experience with different movie libraries.</span>
+</div>
+
+<!-- Hint button description -->
+<div class="inline-flex items-center mb-2">
+  <img src="/static/animations/hint.gif" alt="Hint icon" style="width: 35px; height: 35px; margin-right: 8px;" />
+  <span>Click this button for a hint related to the movie title you are guessing.</span>
+</div>
+
+  `;
   showhowModal(howToPlayTitle, howToPlayContent);
 }
 

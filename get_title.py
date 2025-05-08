@@ -24,16 +24,17 @@ def add_title_to_used(title):
     with open(USED_TITLES_FILE, 'a', encoding='utf-8') as f:
         f.write(title.strip() + '\n')
 
-def generate_movie_title(max_length):
+def generate_movie_title(max_length, language="English"):
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
         return None
 
     prompt = (
-        f"Give me the title of a random, well-known English-language movie from any year or genre. "
+        f"Give me the title of a random, well-known {language}-language movie from any year or genre. "
         f"Avoid picking only the most popular or recent titles. "
         f"Choose from a wide range across decades, from 1980 onwards. "
-        f"The movie title should not exceed {max_length} characters in length. "
+        f"but make sure the **entire** movie title is within {max_length} characters. "
+        f"Do not abbreviate or truncate. If no full title fits within {max_length} characters, choose another movie. "
         f"Only return the plain movie title. Do not include quotes, formatting, or any extra text—just the movie name."
     )
 
@@ -59,9 +60,9 @@ def generate_movie_title(max_length):
     except:
         return None
 
-def get_daily_title(is_mobile, fallback_title="Inception"):
+def get_daily_title(is_mobile, language="English", fallback_title="Inception"):
     today = date.today().isoformat()
-    cache_key = f"{today}-mobile" if is_mobile else f"{today}-desktop"
+    cache_key = f"{today}-{language.lower()}-mobile" if is_mobile else f"{today}-{language.lower()}-desktop"
 
     if os.path.exists(CACHE_FILE):
         with open(CACHE_FILE, "r") as f:
@@ -76,7 +77,7 @@ def get_daily_title(is_mobile, fallback_title="Inception"):
     max_length = 10 if is_mobile else 18
 
     for _ in range(5):
-        title = generate_movie_title(max_length)
+        title = generate_movie_title(max_length, language=language)
         if title and title not in used_titles:
             cache[cache_key] = title
             add_title_to_used(title)
@@ -88,3 +89,4 @@ def get_daily_title(is_mobile, fallback_title="Inception"):
     with open(CACHE_FILE, "w") as f:
         json.dump(cache, f, indent=2)
     return fallback_title
+

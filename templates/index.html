@@ -48,6 +48,12 @@
       />
 
       <div class="menu">
+        <!-- Language Selection -->
+        <!-- New Modal Trigger -->
+        <button id="openLanguageModal" aria-label="Choose Language">
+          <div id="lottie-lang-icon" style="width: 50px; height: 50px"></div>
+        </button>
+
         <button
           id="howToPlayButton"
           class="help-button"
@@ -106,6 +112,8 @@
       window.gameHints = {{ hints | tojson }};
       console.log("Target word:", window.targetWord);
     </script>
+    <script src="{{ url_for('static', filename='js/language.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dictionary.js') }}"></script>
     <script src="{{ url_for('static', filename='js/check.js') }}"></script>
     <script src="{{ url_for('static', filename='js/hint.js') }}"></script>
     <script src="{{ url_for('static', filename='js/input.js') }}"></script>

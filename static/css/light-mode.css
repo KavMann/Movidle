@@ -89,14 +89,13 @@ footer,
 }
 
 .key {
-  background-color: #e0e0e0;
-  color: rgb(20, 20, 20);
+  background-color: #e0e0e0 !important;
+  color: rgb(20, 20, 20) !important;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .key:hover {
-  background-color: #ccc;
-  transform: scale(1.1);
+  background-color: #ccc !important;
 }
 
 .key.special {
@@ -116,4 +115,56 @@ footer,
 .letter-input.grey,
 .key.grey {
   background-color: grey !important;
+}
+
+.how-to-modal {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background: #e2e2e2cb;
+  backdrop-filter: blur(8px);
+}
+
+body.theme-transition::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  backdrop-filter: blur(5px);
+  pointer-events: none;
+  animation-duration: 0.5s;
+  animation-timing-function: ease;
+  animation-fill-mode: both;
+}
+
+/* Light to Dark (fade white tint to black tint) */
+body.light-to-dark.theme-transition::before {
+  animation-name: fadeWhiteToBlack;
+}
+
+/* Dark to Light (fade black tint to white tint) */
+body.dark-to-light.theme-transition::before {
+  animation-name: fadeBlackToWhite;
+}
+
+@keyframes fadeBlackToWhite {
+  0% {
+    background-color: rgba(0, 0, 0, 0);
+  }
+  50% {
+    background-color: rgba(0, 0, 0, 0.3);
+  }
+  100% {
+    background-color: rgba(255, 255, 255, 0);
+  }
+}
+
+@keyframes fadeWhiteToBlack {
+  0% {
+    background-color: rgba(255, 255, 255, 0);
+  }
+  50% {
+    background-color: rgba(255, 255, 255, 0.3);
+  }
+  100% {
+    background-color: rgba(0, 0, 0, 0);
+  }
 }

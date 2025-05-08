@@ -1,8 +1,8 @@
 /* === Dark Mode Base Styles === */
 
-html {
+html,
+body {
   overflow-x: hidden;
-  overflow: hidden;
 }
 
 body {
@@ -15,7 +15,6 @@ body {
   align-items: center;
   min-height: 100vh;
   transition: background-color 0.4s ease, color 0.4s ease;
-  overflow-x: hidden;
 }
 
 header,
@@ -23,11 +22,6 @@ footer {
   width: 100%;
   background-color: #1e1e1e;
   transition: background-color 0.4s ease;
-}
-
-footer {
-  margin-top: auto;
-  text-align: center;
 }
 
 header {
@@ -42,19 +36,26 @@ header h1 {
   padding-left: 20px;
 }
 
+footer {
+  margin-top: auto;
+  text-align: center;
+}
+
 .menu {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
+/* Button Styles */
 button,
 .help-button,
 .dropbtn,
 #theme-toggle,
 .dropdown-content button,
 #closeHintButton,
-.modal-content button {
+.modal-content button,
+#languageDropdown {
   background: transparent;
   color: #f0f8ff;
   border: none;
@@ -68,19 +69,52 @@ button,
   transition: opacity 0.3s ease;
 }
 
+#languageDropdown {
+  flex-direction: column;
+}
+
+.language-instruction {
+  color: #f0f8ff;
+  font-size: 1em;
+  margin-bottom: 5px;
+  text-align: center;
+  opacity: 0.8;
+}
+
+.language-input {
+  background: transparent;
+  color: #f0f8ff;
+  border: 1px solid #f0f8ff;
+  border-radius: 5px;
+  padding: 8px;
+  font-size: 1em;
+  width: 100%;
+  transition: opacity 0.3s ease;
+}
+
+.language-input:hover {
+  opacity: 0.8;
+}
+
+hr {
+  width: 100%;
+  border: 0;
+  border-top: 1px solid #f0f8ff;
+  margin: 10px 0;
+}
+
 #closeHintButton,
 .modal-content button {
   background: #00000063;
 }
 
-button:hover,
-.help-button:hover,
-.dropbtn:hover,
-#theme-toggle:hover,
-#closeHintButton:hover {
+#closeHintButton:hover,
+.modal-content button:hover {
   opacity: 0.8;
+  background-color: #333;
 }
 
+/* Dropdown */
 .dropdown {
   position: relative;
 }
@@ -90,7 +124,7 @@ button:hover,
   position: absolute;
   top: 60px;
   right: 0;
-  background-color: #1f1f1f;
+  background-color: #1e1e1eed;
   border: 1px solid #333;
   min-width: 110px;
   border-radius: 5px;
@@ -98,12 +132,12 @@ button:hover,
   overflow: hidden;
   animation: fadeIn 0.2s ease-in-out;
   z-index: 10;
+  backdrop-filter: blur(10px);
 }
 
 .dropdown-content.show {
   display: block;
-  margin-right: 54px;
-  margin-top: 10px;
+  margin: 10px 54px 0 0;
 }
 
 .dropdown-content button {
@@ -128,6 +162,7 @@ button:hover,
   cursor: not-allowed;
 }
 
+/* Lottie Icons */
 #lottie-theme-icon,
 #lottie-howto-icon,
 #lottie-help-icon {
@@ -141,12 +176,14 @@ button:hover,
   transform: scale(1.2);
 }
 
-#lottie-help-icon {
+#lottie-help-icon,
+#lottie-lang-icon {
   width: 100%;
   height: 100%;
   pointer-events: none;
 }
 
+/* Inputs */
 .input-section {
   display: flex;
   flex-direction: column;
@@ -155,21 +192,17 @@ button:hover,
   transition: background-color 0.4s ease;
 }
 
-.guess-row {
+.guess-row,
+.input-row {
   display: flex;
   justify-content: center;
   gap: 2px;
   margin-bottom: 10px;
 }
 
-.input-row {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 10px;
-}
-
 .letter-input,
-input.letter-input {
+input.letter-input,
+.list-example {
   width: 100%;
   max-width: 50px;
   min-width: 20px;
@@ -189,7 +222,8 @@ input.letter-input {
   aspect-ratio: 1;
 }
 
-.letter-input:focus {
+.letter-input:focus,
+.list-example:focus {
   outline: none;
   border-color: #27da2d77;
   box-shadow: 0 0 5px #53f056c2;
@@ -198,17 +232,20 @@ input.letter-input {
 }
 
 .letter-input.green,
-.key.green {
+.key.green,
+.list-example.green {
   background: green !important;
 }
 
 .letter-input.yellow,
-.key.yellow {
+.key.yellow,
+.list-example.yellow {
   background: rgb(129, 129, 22) !important;
 }
 
 .letter-input.grey,
-.key.grey {
+.key.grey,
+.list-example.grey {
   background: rgb(46, 46, 46) !important;
 }
 
@@ -222,7 +259,8 @@ input.letter-input {
 
 .message-box,
 .play-again-modal .modal-content,
-.hint-box {
+.hint-box,
+.how-to-modal {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -264,54 +302,16 @@ input.letter-input {
   z-index: 999;
 }
 
-.hint-box {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  padding: 20px;
-  border-radius: 8px;
-  z-index: 1000;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.play-again-modal .modal-content {
+  background: #1e1e1e;
 }
 
 .how-to-modal {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  padding: 20px;
-  border-radius: 8px;
-  z-index: 1000;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   background: #1e1e1eed;
   backdrop-filter: blur(10px);
   width: 80%;
 }
 
-.play-again-modal .modal-content {
-  background: #1e1e1e;
-  padding: 20px;
-}
-
-.modal-content button {
-  background: #444;
-  color: white;
-}
-
-.modal-content button:hover {
-  background-color: #333;
-}
 .modal-button-wrapper {
   display: flex;
   justify-content: center;
@@ -349,6 +349,11 @@ input.flip {
   }
 }
 
+.flip-in {
+  animation: flipIn 0.6s ease-out forwards;
+  transform-origin: preserve-3d;
+}
+
 .past-guess {
   transform: scale(0.85);
   opacity: 0.7;
@@ -356,56 +361,9 @@ input.flip {
   transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
-.flip-in {
-  animation: flipIn 0.6s ease-out forwards;
-  transform-origin: preserve-3d;
-}
-
 #input-container {
   perspective: 800px;
   margin-top: 25px;
-}
-
-.list-example {
-  display: inline-grid;
-  width: 25px;
-  height: 25px;
-  margin: 2px;
-  font-size: 20px;
-  text-align: center;
-  text-transform: uppercase;
-  caret-color: transparent;
-  background: #121212;
-  color: rgb(216, 216, 216);
-  border: none;
-  border-radius: 5px;
-  outline: 1px solid #ccc;
-  position: relative;
-  transition: background-color 0.4s ease, color 0.4s ease,
-    border-color 0.4s ease, box-shadow 0.4s ease;
-}
-
-.list-example:focus {
-  outline: none;
-  border-color: #27da2d77;
-  box-shadow: 0 0 5px #53f056c2;
-  background-color: #353f35;
-  color: white;
-}
-
-.list-example.green,
-.key.green {
-  background: green !important;
-}
-
-.list-example.yellow,
-.key.yellow {
-  background: rgb(129, 129, 22) !important;
-}
-
-.list-example.grey,
-.key.grey {
-  background: rgb(46, 46, 46) !important;
 }
 
 @keyframes fadeIn {
@@ -416,5 +374,51 @@ input.flip {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+body.theme-transition::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  backdrop-filter: blur(5px);
+  pointer-events: none;
+  animation-duration: 0.5s;
+  animation-timing-function: ease;
+  animation-fill-mode: both;
+}
+
+/* Light to Dark (fade white tint to black tint) */
+body.light-to-dark.theme-transition::before {
+  animation-name: fadeWhiteToBlack;
+}
+
+/* Dark to Light (fade black tint to white tint) */
+body.dark-to-light.theme-transition::before {
+  animation-name: fadeBlackToWhite;
+}
+
+@keyframes fadeBlackToWhite {
+  0% {
+    background-color: rgba(0, 0, 0, 0);
+  }
+  50% {
+    background-color: rgba(0, 0, 0, 0.3);
+  }
+  100% {
+    background-color: rgba(255, 255, 255, 0);
+  }
+}
+
+@keyframes fadeWhiteToBlack {
+  0% {
+    background-color: rgba(255, 255, 255, 0);
+  }
+  50% {
+    background-color: rgba(255, 255, 255, 0.3);
+  }
+  100% {
+    background-color: rgba(0, 0, 0, 0);
   }
 }

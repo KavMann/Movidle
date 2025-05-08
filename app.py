@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from hints import generate_hints
 from get_title import get_daily_title
 
@@ -12,13 +12,25 @@ def is_mobile_request():
 
 @app.route('/')
 def index():
+    language = request.args.get('lang', 'English')
+
     is_mobile = is_mobile_request()
-    chosen_title = get_daily_title(is_mobile)
+    # Pass the language into your title generation logic
+    chosen_title = get_daily_title(is_mobile, language=language)
 
     if chosen_title not in hint_cache:
         hint_cache[chosen_title] = generate_hints(chosen_title)
 
     return render_template('index.html', word=chosen_title, hints=hint_cache[chosen_title])
+
+@app.route('/change_language')
+def change_language():
+    language = request.args.get('lang', 'English')
+    is_mobile = request.args.get('is_mobile', 'false').lower() == 'true'
+
+    chosen_title = get_daily_title(is_mobile, language=language)
+    return jsonify({"title": chosen_title})
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
