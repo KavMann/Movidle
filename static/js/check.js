@@ -55,7 +55,7 @@ function checkGuess() {
   }
 
   // ✅ Validate segments
-  if (!isGuessSegmentedValid(row)) {
+  if (window.currentLanguage === "english" && !isGuessSegmentedValid(row)) {
     return alert("Each word segment must be a real English word.");
   }
 

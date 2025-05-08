@@ -65,10 +65,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  window.currentLanguage = "english"; // default to English
   // Set language logic
   setLanguageButton?.addEventListener("click", () => {
     const customLanguage = languageInput.value.trim();
     if (!customLanguage) return;
+
+    window.currentLanguage = customLanguage.toLowerCase();
 
     const isMobile = /Mobi|Android/i.test(navigator.userAgent);
     fetch(`/change_language?lang=${customLanguage}&is_mobile=${isMobile}`)
