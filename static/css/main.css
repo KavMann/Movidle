@@ -197,7 +197,6 @@ hr {
   display: flex;
   justify-content: center;
   gap: 2px;
-  margin-bottom: 10px;
 }
 
 .letter-input,
@@ -205,7 +204,7 @@ input.letter-input {
   width: 100%;
   max-width: 50px;
   min-width: 20px;
-  margin: 5px;
+  margin: 4px 5px;
   font-size: 24px;
   text-align: center;
   text-transform: uppercase;
@@ -290,6 +289,15 @@ input.letter-input {
   border-radius: 8px;
   z-index: 1000;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.how-to-modal .modal-content {
+  max-height: 80vh;
+  overflow-y: auto;
+  border-radius: 8px;
+  padding: 20px;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .message-box {

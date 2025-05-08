@@ -91,6 +91,21 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!container) return console.error("input-container not found!");
     container.innerHTML = ""; // Clear old rows
     generateInputs(window.targetWord); // Regenerate inputs for the new word
+
+    // Reset keyboard colors
+    resetKeyboardColors();
+  }
+
+  function resetKeyboardColors() {
+    if (typeof keyState === "object") {
+      for (const key in keyState) {
+        delete keyState[key];
+      }
+    }
+
+    [...document.getElementsByClassName("key")].forEach((key) => {
+      key.classList.remove("green", "yellow", "grey");
+    });
   }
 
   // Load Lottie language icon animation

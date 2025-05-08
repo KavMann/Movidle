@@ -147,64 +147,25 @@ function createNewRow() {
     setTimeout(() => {
       row.classList.remove("flip-in");
       row.classList.add("past-guess");
+      hideOldRowsIfSmallViewport();
     }, targetWord.length * 300 + 300)
   );
 
   setTimeout(() => generateInputs(targetWord), targetWord.length * 300 + 300);
 }
 
-function fillRandomLetter() {
-  const currentInputs = Array.from(
-    document.querySelectorAll("#input-container .guess-row:last-child input")
-  );
+function hideOldRowsIfSmallViewport() {
+  const allRows = document.querySelectorAll("#input-container .guess-row");
+  const maxVisible = 3;
 
-  const allPreviousRows = Array.from(
-    document.querySelectorAll("#input-container .guess-row.past-guess")
-  );
-
-  const correctPositions = new Set();
-
-  // Loop over previous guesses to collect correct positions
-  allPreviousRows.forEach((row) => {
-    const inputs = row.querySelectorAll("input");
-    inputs.forEach((input, index) => {
-      if (input.classList.contains("green")) {
-        correctPositions.add(index);
-      }
+  if (window.innerHeight <= 700) {
+    allRows.forEach((row, index) => {
+      row.style.display = index < allRows.length - maxVisible ? "none" : "flex";
     });
-  });
-
-  // Get valid letter indices in targetWord (skip spaces/symbols)
-  const letterPositions = [...targetWord]
-    .map((char, index) => (/[a-z]/i.test(char) ? index : -1))
-    .filter((index) => index !== -1);
-
-  // Find empty input indexes that are NOT already guessed correctly
-  const eligibleIndexes = currentInputs
-    .map((input, index) =>
-      input.value === "" && !correctPositions.has(index) ? index : -1
-    )
-    .filter((index) => index !== -1);
-
-  if (eligibleIndexes.length === 0) {
-    alert("No empty letters to fill!");
-    return;
-  }
-
-  const randomIndex =
-    eligibleIndexes[Math.floor(Math.random() * eligibleIndexes.length)];
-  const targetIndex = letterPositions[randomIndex];
-
-  if (targetIndex === undefined) {
-    alert("Could not determine correct letter position.");
-    return;
-  }
-
-  const correctLetter = targetWord[targetIndex]?.toUpperCase();
-
-  if (/[A-Z]/.test(correctLetter)) {
-    currentInputs[randomIndex].value = correctLetter;
   } else {
-    alert("Target character is not a valid letter.");
+    // Ensure all rows are shown again if viewport is tall enough
+    allRows.forEach((row) => {
+      row.style.display = "flex";
+    });
   }
 }
