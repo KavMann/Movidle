@@ -139,7 +139,7 @@ function showHowToPlayModal() {
     <!-- Language button description -->
 <div class="inline-flex items-center mb-2">
   <img src="/static/animations/language.gif" alt="Language icon" style="width: 35px; height: 35px; margin-right: 8px;" />
-  <span>This button allows you to change the language in order to get language/region-specific titles, enhancing your gaming experience with different movie libraries.</span>
+  <span>This button allows you to change the language in order to get language/region-specific titles.</span>
 </div>
 
 <!-- Hint button description -->
