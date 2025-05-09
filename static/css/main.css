@@ -35,6 +35,32 @@ header h1 {
   margin: 0;
   padding-left: 20px;
 }
+/* Header layout fix */
+.header {
+  background-color: #1e1e1e;
+  padding: 0.75rem 1rem;
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Logo image */
+.logo {
+  height: 3.5rem;
+  width: auto;
+  mix-blend-mode: exclusion;
+}
+
+.icon {
+  width: 50px;
+  height: 50px;
+  pointer-events: none;
+}
 
 footer {
   margin-top: auto;
@@ -45,6 +71,14 @@ footer {
   display: flex;
   align-items: center;
   gap: 0.5vw;
+}
+.menu button {
+  padding: 0; /* Remove extra padding */
+  width: auto;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Button Styles */

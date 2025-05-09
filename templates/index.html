@@ -39,44 +39,50 @@
   <body>
     <!-- Header / Navigation -->
     <header role="banner">
-      <h1 class="sr-only">Movidle</h1>
-      <img
-        src="static/animations/Logo.png"
-        alt="Movidle logo"
-        tabindex="0"
-        class="h-12 sm:h-14 md:h-16 w-auto mix-blend-exclusion"
-      />
+      <div class="header-container">
+        <h1 class="sr-only">Movidle</h1>
+        <img
+          src="static/animations/Logo.png"
+          alt="Movidle logo"
+          tabindex="0"
+          class="h-12 sm:h-14 md:h-16 w-auto mix-blend-exclusion"
+        />
 
-      <div class="menu">
-        <!-- Language Selection -->
-        <!-- New Modal Trigger -->
-        <button id="openLanguageModal" aria-label="Choose Language">
-          <div id="lottie-lang-icon" style="width: 50px; height: 50px"></div>
-        </button>
-
-        <button
-          id="howToPlayButton"
-          class="help-button"
-          aria-label="How to Play"
-        >
-          <div id="lottie-howto-icon" style="width: 35px; height: 35px"></div>
-        </button>
-        <div class="dropdown">
-          <button
-            id="help-toggle"
-            class="dropbtn"
-            aria-label="Show Hint Options"
-          >
-            <div id="lottie-help-icon" style="width: 50px; height: 50px"></div>
+        <div class="menu">
+          <!-- Language Selection -->
+          <!-- New Modal Trigger -->
+          <button id="openLanguageModal" aria-label="Choose Language">
+            <div id="lottie-lang-icon" style="width: 50px; height: 50px"></div>
           </button>
-          <div id="hintDropdown" class="dropdown-content">
-            <button id="getHintButton">Get Hint</button>
-            <button id="fillLetterButton">Fill a Letter</button>
+
+          <button
+            id="howToPlayButton"
+            class="help-button"
+            aria-label="How to Play"
+          >
+            <div id="lottie-howto-icon" style="width: 35px; height: 35px"></div>
+          </button>
+          <div class="dropdown">
+            <button
+              id="help-toggle"
+              class="dropbtn"
+              aria-label="Show Hint Options"
+            >
+              <div
+                id="lottie-help-icon"
+                style="width: 50px; height: 50px"
+              ></div>
+            </button>
+            <div id="hintDropdown" class="dropdown-content">
+              <button id="getHintButton">Get Hint</button>
+              <button id="fillLetterButton">Fill a Letter</button>
+              <div id="mobile-howto-placeholder"></div>
+            </div>
           </div>
+          <button id="theme-toggle" aria-label="Toggle theme">
+            <div id="lottie-theme-icon" style="width: 50px; height: 50px"></div>
+          </button>
         </div>
-        <button id="theme-toggle" aria-label="Toggle theme">
-          <div id="lottie-theme-icon" style="width: 50px; height: 50px"></div>
-        </button>
       </div>
     </header>
 

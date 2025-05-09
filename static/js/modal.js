@@ -159,3 +159,13 @@ const howToPlayButtonElement = document.getElementById("howToPlayButton");
 if (howToPlayButtonElement) {
   howToPlayButtonElement.addEventListener("click", showHowToPlayModal);
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const howToBtn = document.getElementById("howToPlayButton");
+  const mobilePlaceholder = document.getElementById("mobile-howto-placeholder");
+
+  if (isMobile && howToBtn && mobilePlaceholder) {
+    mobilePlaceholder.appendChild(howToBtn); // Move the button into the dropdown
+  }
+});
