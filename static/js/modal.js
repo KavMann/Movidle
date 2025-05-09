@@ -153,19 +153,20 @@ function showHowToPlayModal() {
 }
 
 // Show the How to Play modal on page load
-document.addEventListener("DOMContentLoaded", showHowToPlayModal);
-
-const howToPlayButtonElement = document.getElementById("howToPlayButton");
-if (howToPlayButtonElement) {
-  howToPlayButtonElement.addEventListener("click", showHowToPlayModal);
-}
-
 document.addEventListener("DOMContentLoaded", () => {
   const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-  const howToBtn = document.getElementById("howToPlayButton");
-  const mobilePlaceholder = document.getElementById("mobile-howto-placeholder");
+  const mobileHowToBtn = document.getElementById("mobileHowToTextButton");
+  const iconHowToBtn = document.getElementById("howToPlayButton");
 
-  if (isMobile && howToBtn && mobilePlaceholder) {
-    mobilePlaceholder.appendChild(howToBtn); // Move the button into the dropdown
+  if (isMobile) {
+    // Show text button and hide icon button
+    if (mobileHowToBtn) mobileHowToBtn.style.display = "block";
+    if (iconHowToBtn) iconHowToBtn.style.display = "none";
+
+    // Add event listener to open how-to modal
+    mobileHowToBtn?.addEventListener("click", () => {
+      showHowToPlayModal();
+      document.getElementById("hintDropdown")?.classList.remove("show");
+    });
   }
 });
