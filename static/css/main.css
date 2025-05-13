@@ -482,7 +482,7 @@ body.dark-to-light.theme-transition::before {
 }
 
 /* Optional: Warn users or adjust layout if in landscape */
-@media screen and (orientation: landscape) and (max-width: 768px) {
+@media screen and (orientation: landscape) and (max-height: 600px) {
   body::before {
     content: "Please rotate your device to portrait mode for best experience.";
     position: fixed;
