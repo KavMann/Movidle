@@ -1,6 +1,6 @@
 let validWords = new Set();
 
-fetch("/static/google-10000-english.txt")
+fetch("static/merged_words.txt")
   .then((response) => response.text())
   .then((text) => {
     validWords = new Set(

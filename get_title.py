@@ -55,7 +55,9 @@ def generate_movie_title(max_length, language="English"):
         )
         if response.status_code == 200:
             text = response.json()["candidates"][0]["content"]["parts"][0]["text"]
-            return text.strip().strip('"')
+            cleaned = strip_symmetric_wrappers(text)
+            return cleaned
+
         return None
     except:
         return None
@@ -90,3 +92,11 @@ def get_daily_title(is_mobile, language="English", fallback_title="Inception"):
         json.dump(cache, f, indent=2)
     return fallback_title
 
+def strip_symmetric_wrappers(text):
+    text = text.strip()
+    if len(text) >= 2:
+        first = text[0]
+        last = text[-1]
+        if first == last and first in '*"\'_`~':
+            return text[1:-1].strip()
+    return text
