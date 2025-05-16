@@ -169,4 +169,5 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("hintDropdown")?.classList.remove("show");
     });
   }
+  showHowToPlayModal();
 });
