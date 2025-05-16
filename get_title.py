@@ -73,24 +73,28 @@ def get_daily_title(is_mobile, language="English", fallback_title="Inception"):
         cache = {}
 
     if cache_key in cache:
+        print(f"[INFO] Retrieved cached title for key: {cache_key} → {cache[cache_key]}")
         return cache[cache_key]
 
     used_titles = get_used_titles()
     max_length = 10 if is_mobile else 18
 
-    for _ in range(5):
+    for attempt in range(5):
         title = generate_movie_title(max_length, language=language)
         if title and title not in used_titles:
             cache[cache_key] = title
             add_title_to_used(title)
             with open(CACHE_FILE, "w") as f:
                 json.dump(cache, f, indent=2)
+            print(f"[INFO] Generated new title for key: {cache_key} → {title}")
             return title
 
     cache[cache_key] = fallback_title
     with open(CACHE_FILE, "w") as f:
         json.dump(cache, f, indent=2)
+    print(f"[WARNING] Fallback used for key: {cache_key} → {fallback_title}")
     return fallback_title
+
 
 def strip_symmetric_wrappers(text):
     text = text.strip()
