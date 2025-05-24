@@ -1,10 +1,9 @@
-const hints = window.gameHints;
 const helpToggle = document.getElementById("help-toggle");
 const hintDropdown = document.getElementById("hintDropdown");
 const getHintButton = document.getElementById("getHintButton");
 const fillLetterButton = document.getElementById("fillLetterButton");
 const helpIconContainer = document.getElementById("lottie-help-icon");
-const defaultFrame = 120; // Define the default frame
+const defaultFrame = 120;
 
 let currentHint = 0;
 let incorrectGuesses = 0;
@@ -33,7 +32,7 @@ function updateHintButtonState() {
 
 function showHintModal(content) {
   if (!content) {
-    console.warn("hint.js:    showHintModal called with empty content!");
+    console.warn("hint.js: showHintModal called with empty content!");
   }
 
   displayedHints.push(content);
@@ -42,12 +41,13 @@ function showHintModal(content) {
   box.className = "hint-box";
   let hintList = displayedHints.map((hint) => `<p>${hint}</p>`).join("");
   box.innerHTML = `
-        <div class="hint-content">
-            ${hintList}
-            <div class="modal-button-wrapper">
+    <div class="hint-content">
+        ${hintList}
+        <div class="modal-button-wrapper">
           <button id="closeHintButton">OK</button>
         </div>
-    `;
+    </div>
+  `;
   document.body.appendChild(box);
 
   const closeButton = document.getElementById("closeHintButton");
@@ -65,10 +65,10 @@ function loadHelpAnimation() {
   helpAnimation = lottie.loadAnimation({
     container: helpIconContainer,
     renderer: "svg",
-    loop: false, // Set loop to false for a single play on hover
+    loop: false,
     autoplay: false,
-    path: "/static/animations/help.json", // Corrected path
-    initialSegment: [defaultFrame, defaultFrame], // Set initial frame
+    path: "/static/animations/help.json",
+    initialSegment: [defaultFrame, defaultFrame],
   });
 }
 
@@ -76,22 +76,22 @@ loadHelpAnimation();
 
 helpToggle.addEventListener("mouseenter", () => {
   if (helpAnimation) {
-    helpAnimation.playSegments([1, 120], true); // Play from frame 1 to 120 once
+    helpAnimation.playSegments([1, 120], true);
   }
 });
 
 helpToggle.addEventListener("mouseleave", () => {
   if (helpAnimation) {
-    helpAnimation.goToAndStop(defaultFrame, true); // Go back to the default frame
+    helpAnimation.goToAndStop(defaultFrame, true);
   }
 });
 
 getHintButton.addEventListener("click", () => {
-  if (currentHint < hints.length && currentHint < incorrectGuesses) {
-    showHintModal(hints[currentHint]);
+  if (currentHint < window.gameHints.length && currentHint < incorrectGuesses) {
+    showHintModal(window.gameHints[currentHint]);
     currentHint++;
     updateHintButtonState();
-    if (currentHint >= hints.length) {
+    if (currentHint >= window.gameHints.length) {
       getHintButton.disabled = true;
       getHintButton.textContent = "No more hints";
     }
@@ -106,7 +106,6 @@ fillLetterButton.addEventListener("click", () => {
   hintDropdown.classList.remove("show");
 });
 
-// Keep the click event to toggle the dropdown
 helpToggle.addEventListener("click", () => {
   hintDropdown.classList.toggle("show");
 });
@@ -136,7 +135,6 @@ function fillRandomLetter() {
 
   const correctPositions = new Set();
 
-  // Loop over previous guesses to collect correct positions
   allPreviousRows.forEach((row) => {
     const inputs = row.querySelectorAll("input");
     inputs.forEach((input, index) => {
@@ -146,12 +144,10 @@ function fillRandomLetter() {
     });
   });
 
-  // Get valid letter indices in targetWord (skip spaces/symbols)
   const letterPositions = [...targetWord]
     .map((char, index) => (/[a-z]/i.test(char) ? index : -1))
     .filter((index) => index !== -1);
 
-  // Find empty input indexes that are NOT already guessed correctly
   const eligibleIndexes = currentInputs
     .map((input, index) =>
       input.value === "" && !correctPositions.has(index) ? index : -1

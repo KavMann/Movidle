@@ -77,16 +77,43 @@ document.addEventListener("DOMContentLoaded", () => {
     fetch(`/change_language?lang=${customLanguage}&is_mobile=${isMobile}`)
       .then((res) => res.json())
       .then((data) => {
-        window.targetWord = data.title;
+        const newTitle = data.title;
+        window.targetWord = newTitle.toUpperCase();
         console.log("New movie title:", window.targetWord);
-        resetGame();
-        languageModal.classList.add("hidden"); // Close the modal after language change
+
+        fetch(
+          `/get_hints?title=${encodeURIComponent(
+            newTitle
+          )}&lang=${customLanguage}`
+        )
+          .then((res) => res.json())
+          .then((hintData) => {
+            window.gameHints = hintData.hints || [];
+            console.log("New hints:", window.gameHints);
+            resetGame();
+            languageModal.classList.add("hidden"); // Close the modal
+          })
+          .catch((err) => {
+            console.error("Error fetching hints:", err);
+            window.gameHints = ["Could not load hints."];
+            resetGame();
+            languageModal.classList.add("hidden");
+          });
       })
+
       .catch((err) => console.error("Error fetching movie title:", err));
   });
 
   // Reset the game
   function resetGame() {
+    // Reset hint logic
+    currentHint = 0;
+    incorrectGuesses = 0;
+    displayedHints = [];
+    getHintButton.disabled = true;
+    fillLetterButton.disabled = true;
+    getHintButton.textContent = "Get Hint";
+
     const container = document.getElementById("input-container");
     if (!container) return console.error("input-container not found!");
     container.innerHTML = ""; // Clear old rows

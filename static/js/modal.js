@@ -159,12 +159,20 @@ document.addEventListener("DOMContentLoaded", () => {
   const iconHowToBtn = document.getElementById("howToPlayButton");
 
   if (isMobile) {
-    // Show text button and hide icon button
     if (mobileHowToBtn) mobileHowToBtn.style.display = "block";
     if (iconHowToBtn) iconHowToBtn.style.display = "none";
+  }
 
-    // Add event listener to open how-to modal
-    mobileHowToBtn?.addEventListener("click", () => {
+  // Add click listeners for both buttons (whichever is visible)
+  if (mobileHowToBtn) {
+    mobileHowToBtn.addEventListener("click", () => {
+      showHowToPlayModal();
+      document.getElementById("hintDropdown")?.classList.remove("show");
+    });
+  }
+
+  if (iconHowToBtn) {
+    iconHowToBtn.addEventListener("click", () => {
       showHowToPlayModal();
       document.getElementById("hintDropdown")?.classList.remove("show");
     });

@@ -15,13 +15,13 @@ def index():
     language = request.args.get('lang', 'English')
 
     is_mobile = is_mobile_request()
-    # Pass the language into your title generation logic
     chosen_title = get_daily_title(is_mobile, language=language)
 
-    if chosen_title not in hint_cache:
-        hint_cache[chosen_title] = generate_hints(chosen_title)
+    cache_key = f"{language}:{chosen_title}"
+    if cache_key not in hint_cache:
+        hint_cache[cache_key] = generate_hints(chosen_title)
 
-    return render_template('index.html', word=chosen_title, hints=hint_cache[chosen_title])
+    return render_template('index.html', word=chosen_title, hints=hint_cache[cache_key])
 
 @app.route('/change_language')
 def change_language():
@@ -31,6 +31,19 @@ def change_language():
     chosen_title = get_daily_title(is_mobile, language=language)
     return jsonify({"title": chosen_title})
 
+@app.route('/get_hints')
+def get_hints():
+    title = request.args.get('title')
+    language = request.args.get('lang', 'English')
+
+    if not title:
+        return jsonify({"error": "Missing title"}), 400
+
+    cache_key = f"{language}:{title}"
+    if cache_key not in hint_cache:
+        hint_cache[cache_key] = generate_hints(title)
+
+    return jsonify({"hints": hint_cache[cache_key]})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
