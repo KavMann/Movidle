@@ -106,7 +106,7 @@ def generate_movie_title(max_length, language="English", used_titles=None):
 
     prompt = (
         f"Provide the exact title of a well-known {language}-language movie from any year or genre, "
-        f"from 1980 onward. The title must be within {max_length} characters long, without abbreviation or truncation. "
+        f"from 1990 onward. The title must be within {max_length} characters long, without abbreviation or truncation. "
         f"Do NOT include quotes, formatting, or any extra text—only the movie title. "
         f"{avoid_text}"
         f"Avoid selecting only the most popular or recent movies. Choose titles from a wide range across decades. "
