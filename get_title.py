@@ -2,64 +2,115 @@ import os
 import json
 import requests
 from datetime import date
+import mysql.connector
 from dotenv import load_dotenv
 
 load_dotenv()
 
 API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
-HEADERS = {
-    "Content-Type": "application/json",
-}
+HEADERS = {"Content-Type": "application/json"}
 REQUEST_TIMEOUT = 30
-CACHE_FILE = "daily_title_cache.json"
-USED_TITLES_FILE = "used_titles.txt"
+FALLBACK_TITLE = "Inception"
+
+# Connect to MySQL
+def get_db_connection():
+    return mysql.connector.connect(
+        host=os.getenv("DB_HOST"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        database=os.getenv("DB_NAME")
+    )
+
+# Ensure necessary tables exist
+def setup_db():
+    db = get_db_connection()
+    cursor = db.cursor()
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS used_titles (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        title VARCHAR(255) UNIQUE,
+        used_on DATE DEFAULT CURRENT_DATE
+    )""")
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS daily_titles (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        cache_key VARCHAR(255) UNIQUE,
+        title VARCHAR(255),
+        created_on DATE DEFAULT CURRENT_DATE
+    )""")
+    db.commit()
+    cursor.close()
+    db.close()
+
+setup_db()
 
 def get_used_titles():
-    """Read the set of used movie titles from file."""
-    if not os.path.exists(USED_TITLES_FILE):
-        return set()
-    with open(USED_TITLES_FILE, 'r', encoding='utf-8') as f:
-        return set(line.strip() for line in f.readlines())
+    db = get_db_connection()
+    cursor = db.cursor()
+    cursor.execute("SELECT title FROM used_titles ORDER BY used_on DESC LIMIT 100")
+    titles = set(row[0] for row in cursor.fetchall())
+    cursor.close()
+    db.close()
+    return titles
 
 def add_title_to_used(title):
-    """Add a new title to used list, keeping only the last 100 unique titles."""
-    titles = list(get_used_titles())
-    titles.append(title.strip())
-    # Keep only last 100 unique titles
-    titles = list(dict.fromkeys(titles))[-100:]
-    with open(USED_TITLES_FILE, 'w', encoding='utf-8') as f:
-        for t in titles:
-            f.write(t + '\n')
+    db = get_db_connection()
+    cursor = db.cursor()
+    try:
+        cursor.execute("INSERT IGNORE INTO used_titles (title) VALUES (%s)", (title,))
+        db.commit()
+    finally:
+        cursor.close()
+        db.close()
+
+def get_cached_title(cache_key):
+    db = get_db_connection()
+    cursor = db.cursor()
+    cursor.execute("SELECT title FROM daily_titles WHERE cache_key = %s AND created_on = CURDATE()", (cache_key,))
+    row = cursor.fetchone()
+    cursor.close()
+    db.close()
+    return row[0] if row else None
+
+def cache_daily_title(cache_key, title):
+    db = get_db_connection()
+    cursor = db.cursor()
+    try:
+        cursor.execute("""
+            INSERT INTO daily_titles (cache_key, title, created_on)
+            VALUES (%s, %s, CURDATE())
+            ON DUPLICATE KEY UPDATE title = VALUES(title)
+        """, (cache_key, title))
+        db.commit()
+    finally:
+        cursor.close()
+        db.close()
+
+def strip_symmetric_wrappers(text):
+    text = text.strip()
+    if len(text) >= 2:
+        first = text[0]
+        last = text[-1]
+        if first == last and first in '*"\'_`~':
+            return text[1:-1].strip()
+    return text
 
 def generate_movie_title(max_length, language="English", used_titles=None):
-    """
-    Call Gemini API to generate a movie title,
-    explicitly avoiding titles in `used_titles`.
-    """
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
         return None
 
     avoid_text = ""
     if used_titles:
-        avoid_text = f"IMPORTANT: Do NOT return any movie title from this list of previously used titles: {', '.join(sorted(used_titles))}. "
+        avoid_text = f"Do NOT use these titles: {', '.join(sorted(used_titles))}. "
 
     prompt = (
-        f"Provide the exact title of a well-known {language}-language movie from any year or genre, "
-        f"from 1980 onward. The title must be within {max_length} characters long, without abbreviation or truncation. "
-        f"Do NOT include quotes, formatting, or any extra text—only the movie title. "
-        f"{avoid_text}"
-        f"Avoid selecting only the most popular or recent movies. Choose titles from a wide range across decades. "
-        f"If no suitable title fits the length restriction, select another."
+        f"Give me a {language}-language movie title from 1980 onwards, not too popular or recent. "
+        f"The title must be under {max_length} characters. {avoid_text}"
+        f"Only return the title—no quotes, symbols, or extras."
     )
 
-    payload = {
-        "contents": [
-            {
-                "parts": [{"text": prompt}]
-            }
-        ]
-    }
+    payload = {"contents": [{"parts": [{"text": prompt}]}]}
 
     try:
         response = requests.post(
@@ -70,59 +121,29 @@ def generate_movie_title(max_length, language="English", used_titles=None):
         )
         if response.status_code == 200:
             text = response.json()["candidates"][0]["content"]["parts"][0]["text"]
-            cleaned = strip_symmetric_wrappers(text)
-            return cleaned
-
-        print(f"Gemini API error: Status code {response.status_code}")
+            return strip_symmetric_wrappers(text)
         return None
     except Exception as e:
-        print(f"Exception during Gemini API call: {e}")
+        print("API call error:", e)
         return None
 
-def get_daily_title(is_mobile, language="English", fallback_title="Inception"):
-    """
-    Return a daily unique movie title for given device type and language.
-    Cache results and keep track of used titles to avoid duplicates.
-    """
+def get_daily_title(is_mobile, language="English", fallback_title=FALLBACK_TITLE):
     today = date.today().isoformat()
     cache_key = f"{today}-{language.lower()}-mobile" if is_mobile else f"{today}-{language.lower()}-desktop"
 
-    if os.path.exists(CACHE_FILE):
-        with open(CACHE_FILE, "r") as f:
-            cache = json.load(f)
-    else:
-        cache = {}
-
-    if cache_key in cache:
-        return cache[cache_key]
+    cached = get_cached_title(cache_key)
+    if cached:
+        return cached
 
     used_titles = get_used_titles()
     max_length = 10 if is_mobile else 18
 
-    for _ in range(10):  # Increased attempts for uniqueness
+    for _ in range(10):
         title = generate_movie_title(max_length, language=language, used_titles=used_titles)
         if title and title not in used_titles:
-            cache[cache_key] = title
+            cache_daily_title(cache_key, title)
             add_title_to_used(title)
-            with open(CACHE_FILE, "w") as f:
-                json.dump(cache, f, indent=2)
             return title
 
-    # If no unique title found after retries, fallback
-    cache[cache_key] = fallback_title
-    with open(CACHE_FILE, "w") as f:
-        json.dump(cache, f, indent=2)
+    cache_daily_title(cache_key, fallback_title)
     return fallback_title
-
-def strip_symmetric_wrappers(text):
-    """
-    Remove symmetric wrapping characters like quotes, asterisks, etc.
-    from start and end of text.
-    """
-    text = text.strip()
-    if len(text) >= 2:
-        first = text[0]
-        last = text[-1]
-        if first == last and first in '*"\'_`~':
-            return text[1:-1].strip()
-    return text
