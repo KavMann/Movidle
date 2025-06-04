@@ -146,7 +146,20 @@ def get_daily_title(is_mobile, language="English", fallback_title=FALLBACK_TITLE
         if title and title not in used_titles:
             cache_daily_title(cache_key, title)
             add_title_to_used(title)
+            append_title_words_to_dictionary(title)
             return title
 
     cache_daily_title(cache_key, fallback_title)
     return fallback_title
+
+def append_title_words_to_dictionary(title):
+    file_path = os.path.join("static", "merged_words.txt")
+    if not os.path.exists(file_path):
+        open(file_path, 'w').close()
+
+    with open(file_path, 'r+', encoding='utf-8') as f:
+        existing_words = set(word.strip().lower() for word in f.readlines())
+        new_words = [word.strip() for word in title.split() if word.strip().lower() not in existing_words]
+
+        if new_words:
+            f.write('\n' + '\n'.join(new_words))
