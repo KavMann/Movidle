@@ -48,8 +48,6 @@ document.addEventListener("DOMContentLoaded", () => {
   languageModal?.classList.remove("hidden");
 
   setTimeout(() => {
-    languageInput?.focus();
-
     // For WebView-specific keyboard trigger
     if (window.AndroidInterface?.triggerKeyboard) {
       window.AndroidInterface.triggerKeyboard();
