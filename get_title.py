@@ -143,7 +143,7 @@ def get_daily_title(is_mobile, language="English", fallback_title=FALLBACK_TITLE
 
     for _ in range(10):
         title = generate_movie_title(max_length, language=language, used_titles=used_titles)
-        if title and title not in used_titles:
+        if title and title not in used_titles and len(title) <= max_length:
             cache_daily_title(cache_key, title)
             add_title_to_used(title)
             append_title_words_to_dictionary(title)

@@ -45,8 +45,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Open the modal
   openModalButton?.addEventListener("click", () => {
-    languageModal?.classList.remove("hidden");
-  });
+  languageModal?.classList.remove("hidden");
+
+  setTimeout(() => {
+    languageInput?.focus();
+
+    // For WebView-specific keyboard trigger
+    if (window.AndroidInterface?.triggerKeyboard) {
+      window.AndroidInterface.triggerKeyboard();
+    }
+  }, 150);
+});
+
 
   // Close the modal
   closeModalButton?.addEventListener("click", () => {
