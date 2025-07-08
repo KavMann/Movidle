@@ -102,6 +102,10 @@ function findNextInput(el) {
 document.addEventListener("DOMContentLoaded", () => generateInputs(targetWord));
 
 document.addEventListener("click", (e) => {
+  // Do nothing if language modal is open
+  const languageModal = document.getElementById("languageModal");
+  if (languageModal && !languageModal.classList.contains("hidden")) return;
+  
   // Ignore clicks on modals, buttons inside modals, or other focusable elements
   const ignoredSelectors = [
     ".play-again-modal",
