@@ -48,17 +48,6 @@ document.addEventListener("DOMContentLoaded", () => {
   languageModal?.classList.remove("hidden");
 
   setTimeout(() => {
-  // Focus the input
-  languageInput?.focus();
-
-  // Fake a tap/click to "legitimize" focus for Android WebView
-  const evt = new MouseEvent("touchstart", {
-    view: window,
-    bubbles: true,
-    cancelable: true
-  });
-  languageInput?.dispatchEvent(evt);
-
   // Trigger Android keyboard if interface exists
   if (window.AndroidInterface?.triggerKeyboard) {
     window.AndroidInterface.triggerKeyboard();
