@@ -22,6 +22,8 @@ document.addEventListener("DOMContentLoaded", () => {
             placeholder="Enter custom language..."
             aria-label="Enter custom language"
             class="w-full mb-3 px-3 py-2 rounded text-black dark:text-white bg-white dark:bg-gray-700"
+            autofocus
+            inputmode="text"
           />
           <button
             id="setLanguageButton"
@@ -48,11 +50,17 @@ document.addEventListener("DOMContentLoaded", () => {
   languageModal?.classList.remove("hidden");
 
   setTimeout(() => {
-  // Trigger Android keyboard if interface exists
+  const input = document.getElementById("language-input");
+  if (input) {
+    input.focus();
+    input.click(); // simulate user tap for Android
+  }
+
   if (window.AndroidInterface?.triggerKeyboard) {
     window.AndroidInterface.triggerKeyboard();
   }
 }, 150);
+
 
 
 
