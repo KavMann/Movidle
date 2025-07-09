@@ -45,22 +45,25 @@ document.addEventListener("DOMContentLoaded", () => {
   const setLanguageButton = document.getElementById("setLanguageButton");
   const languageInput = document.getElementById("language-input");
 
-  // Open the modal
-  openModalButton?.addEventListener("click", () => {
-  languageModal?.classList.remove("hidden");
-
-  setTimeout(() => {
-  const input = document.getElementById("language-input");
-  if (input) {
-    input.focus();
-    input.click(); // simulate user tap for Android
-  }
-
-  if (window.AndroidInterface?.triggerKeyboard) {
-    window.AndroidInterface.triggerKeyboard();
-  }
-}, 150);
-  });
+    // Open the modal
+    openModalButton?.addEventListener("click", () => {
+        languageModal?.classList.remove("hidden");
+    
+        setTimeout(() => {
+            const input = document.getElementById("language-input");
+            if (input) {
+                // You can still call focus here if it helps prepare the element,
+                // but the Android side will reinforce it.
+                input.focus(); 
+            }
+    
+            // Tell Android to show keyboard AND ensure focus is on 'language-input'
+            if (window.AndroidInterface?.triggerKeyboardForElement) {
+                window.AndroidInterface.triggerKeyboardForElement("language-input");
+            }
+        }, 150); // Delay for modal to render
+    });
+    
 
 
   // Close the modal
