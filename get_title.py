@@ -44,14 +44,18 @@ def setup_db():
 
 setup_db()
 
-def get_used_titles():
+def get_used_titles(limit=None):
     db = get_db_connection()
     cursor = db.cursor()
-    cursor.execute("SELECT title FROM used_titles ORDER BY used_on DESC LIMIT 100")
+    query = "SELECT title FROM used_titles ORDER BY used_on DESC"
+    if limit:
+        query += f" LIMIT {limit}"
+    cursor.execute(query)
     titles = set(row[0] for row in cursor.fetchall())
     cursor.close()
     db.close()
     return titles
+
 
 def add_title_to_used(title):
     db = get_db_connection()
@@ -102,7 +106,7 @@ def generate_movie_title(max_length, language="English", used_titles=None):
 
     avoid_text = ""
     if used_titles:
-        avoid_text = f"Do NOT use these titles: {', '.join(sorted(used_titles))}. "
+        avoid_text = f"Do NOT use these titles (avoid duplicates): {', '.join(sorted(used_titles))}. "
 
     prompt = (
         f"Provide the exact title of a well-known {language}-language movie from any year or genre, "
@@ -111,6 +115,7 @@ def generate_movie_title(max_length, language="English", used_titles=None):
         f"{avoid_text}"
         f"Avoid selecting only the most popular or recent movies. Choose titles from a wide range across decades. "
         f"If no suitable title fits the length restriction, select another."
+        f"Do NOT repeat any of these titles. Choose a diverse movie from a different genre, decade, or tone."
     )
 
     payload = {"contents": [{"parts": [{"text": prompt}]}]}
@@ -138,19 +143,37 @@ def get_daily_title(is_mobile, language="English", fallback_title=FALLBACK_TITLE
     if cached:
         return cached
 
-    used_titles = get_used_titles()
+    used_titles = get_used_titles(limit=1000)
     max_length = 10 if is_mobile else 18
 
-    for _ in range(10):
+    attempts = 0
+    while attempts < 20:
         title = generate_movie_title(max_length, language=language, used_titles=used_titles)
-        if title and title not in used_titles and len(title) <= max_length:
+        if not title:
+            attempts += 1
+            continue
+
+        clean_title = title.strip().lower()
+        if clean_title not in (t.lower() for t in used_titles) and len(title) <= max_length:
             cache_daily_title(cache_key, title)
             add_title_to_used(title)
             append_title_words_to_dictionary(title)
             return title
 
+        attempts += 1
+
+    # If still nothing new, pick a random older title that isn't overused
+    recent_titles = list(used_titles)
+    if recent_titles:
+        for t in recent_titles[-10:]:  # last few used
+            if len(t) <= max_length:
+                cache_daily_title(cache_key, t)
+                return t
+
+    # Absolute fallback
     cache_daily_title(cache_key, fallback_title)
     return fallback_title
+
 
 def append_title_words_to_dictionary(title):
     file_path = os.path.join("static", "merged_words.txt")
