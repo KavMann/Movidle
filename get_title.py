@@ -7,8 +7,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
-HEADERS = {"Content-Type": "application/json"}
+API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent"
+HEADERS = {
+    "Content-Type": "application/json",
+    "X-goog-api-key": os.getenv("GEMINI_API_KEY")
+}
 REQUEST_TIMEOUT = 30
 FALLBACK_TITLE = "Inception"
 
@@ -122,7 +125,7 @@ def generate_movie_title(max_length, language="English", used_titles=None):
 
     try:
         response = requests.post(
-            f"{API_URL}?key={api_key}",
+            API_URL,
             headers=HEADERS,
             json=payload,
             timeout=REQUEST_TIMEOUT
