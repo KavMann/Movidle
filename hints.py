@@ -46,7 +46,7 @@ def generate_hints(movie_title):
 
     try:
         response = requests.post(
-            f"{API_URL}?key={api_key}",
+            API_URL,
             headers=HEADERS,
             json=payload,
             timeout=REQUEST_TIMEOUT
