@@ -6,10 +6,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
+API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent"
 REQUEST_TIMEOUT = 30
 HEADERS = {
     "Content-Type": "application/json",
+    "X-goog-api-key": os.getenv("GEMINI_API_KEY")
 }
 
 def generate_hints(movie_title):
